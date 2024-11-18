@@ -1,0 +1,42 @@
+name: al_qibla
+description: A new Flutter project.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.0.5 <4.0.0'
+
+dependencies:
+  adhan_dart: ^1.0.8
+  flutter:
+    sdk: flutter
+  flutter_compass: ^0.8.0
+  flutter_local_notifications: ^18.0.1
+  flutter_native_timezone: ^2.0.0
+  flutter_svg: ^2.0.5
+  geocoding: ^3.0.0
+  geolocator: ^13.0.2
+  home_widget: ^0.7.0
+  intl: ^0.19.0
+  lat_lng_to_timezone: ^0.2.0
+  location: ^7.0.1
+  provider: ^6.0.5
+  shared_preferences: ^2.2.1
+  system_settings: ^2.1.0
+  table_calendar: ^3.0.9
+  timezone: ^0.10.0
+  workmanager: ^0.5.1
+  win32: ^5.5.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Add the image asset path here
+  assets:
+    - assets/images/      # Assuming your images are located in a folder named "images"
+    - assets/json/
