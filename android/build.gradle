@@ -1,15 +1,4 @@
-buildscript {
-    ext.kotlin_version = '1.9.10'
-    repositories {
-        google()
-        mavenCentral()
-    }
 
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
 
 allprojects {
     repositories {
@@ -19,6 +8,19 @@ allprojects {
 }
 
 rootProject.buildDir = '../build'
+
+subprojects {
+afterEvaluate { project ->
+    if (project.plugins.hasPlugin("com.android.application") ||
+            project.plugins.hasPlugin("com.android.library")) {
+        project.android {
+            compileSdkVersion 34
+        }
+    }
+}
+}
+
+
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }

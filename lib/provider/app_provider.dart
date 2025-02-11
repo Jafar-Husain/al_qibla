@@ -642,17 +642,17 @@ class AppProvider extends ChangeNotifier {
       // App to enable the location services.
 
       return Position(
-          latitude: 51.5074,
-          longitude: -0.1278,
-          timestamp: DateTime.now(),
-          accuracy: 1.0,
-          altitude: 0.0,
-          heading: 0.0,
-          speed: 0.0,
-          speedAccuracy: 0.0,
-          altitudeAccuracy: 1.0, // Add altitudeAccuracy argument
-          headingAccuracy: 1.0, // Add headingAccuracy argument
-        );
+        latitude: 51.5074,
+        longitude: -0.1278,
+        timestamp: DateTime.now(),
+        accuracy: 1.0,
+        altitude: 0.0,
+        heading: 0.0,
+        speed: 0.0,
+        speedAccuracy: 0.0,
+        altitudeAccuracy: 1.0, // Add altitudeAccuracy argument
+        headingAccuracy: 1.0, // Add headingAccuracy argument
+      );
     }
 
     permission = await Geolocator.checkPermission();
@@ -660,18 +660,18 @@ class AppProvider extends ChangeNotifier {
     // Check if permissions are permanently denied
     if (permission == LocationPermission.deniedForever) {
       // Return the default position of London
-       return Position(
-          latitude: 51.5074,
-          longitude: -0.1278,
-          timestamp: DateTime.now(),
-          accuracy: 1.0,
-          altitude: 0.0,
-          heading: 0.0,
-          speed: 0.0,
-          speedAccuracy: 0.0,
-          altitudeAccuracy: 1.0, // Add altitudeAccuracy argument
-          headingAccuracy: 1.0, // Add headingAccuracy argument
-        );
+      return Position(
+        latitude: 51.5074,
+        longitude: -0.1278,
+        timestamp: DateTime.now(),
+        accuracy: 1.0,
+        altitude: 0.0,
+        heading: 0.0,
+        speed: 0.0,
+        speedAccuracy: 0.0,
+        altitudeAccuracy: 1.0, // Add altitudeAccuracy argument
+        headingAccuracy: 1.0, // Add headingAccuracy argument
+      );
     }
 
     // Loop until permission is granted
@@ -701,18 +701,18 @@ class AppProvider extends ChangeNotifier {
         const Duration(seconds: 5),
         onTimeout: () async {
           if (first_launch == true) {
-             return Position(
-          latitude: 51.5074,
-          longitude: -0.1278,
-          timestamp: DateTime.now(),
-          accuracy: 1.0,
-          altitude: 0.0,
-          heading: 0.0,
-          speed: 0.0,
-          speedAccuracy: 0.0,
-          altitudeAccuracy: 1.0, // Add altitudeAccuracy argument
-          headingAccuracy: 1.0, // Add headingAccuracy argument
-        );
+            return Position(
+              latitude: 51.5074,
+              longitude: -0.1278,
+              timestamp: DateTime.now(),
+              accuracy: 1.0,
+              altitude: 0.0,
+              heading: 0.0,
+              speed: 0.0,
+              speedAccuracy: 0.0,
+              altitudeAccuracy: 1.0, // Add altitudeAccuracy argument
+              headingAccuracy: 1.0, // Add headingAccuracy argument
+            );
           } else {
             Position position = await Geolocator.getCurrentPosition();
             return position;
@@ -884,6 +884,26 @@ class AppProvider extends ChangeNotifier {
       await setIshaMissed(0);
     }
 
+    // Request notification permissions
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    final InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+    final bool? result = await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
+
+    if (result == null || !result) {
+      print("Notification permissions denied");
+    } else {
+      print("Notification permissions granted");
+    }
+
     notifyListeners();
   }
 
@@ -899,6 +919,7 @@ class AppProvider extends ChangeNotifier {
     await NotificationApi.init(initScheduled: true);
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
+
     await flutterLocalNotificationsPlugin.cancelAll();
 
     const prayerNames = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
