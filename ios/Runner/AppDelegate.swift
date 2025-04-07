@@ -9,8 +9,10 @@ import workmanager
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
-    UIApplication.shared.setMinimumBackgroundFetchInterval(TimeInterval(60*15))
     
+    WorkmanagerPlugin.registerBGProcessingTask(withIdentifier: "task-identifier")
+    WorkmanagerPlugin.registerPeriodicTask(withIdentifier: "be.tramckrijte.workmanagerExample.iOSBackgroundAppRefresh", frequency: NSNumber(value: 20 * 60))
+    UIApplication.shared.setMinimumBackgroundFetchInterval(TimeInterval(60*15))
     WorkmanagerPlugin.setPluginRegistrantCallback { registry in
     GeneratedPluginRegistrant.register(with: registry)
     }

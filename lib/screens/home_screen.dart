@@ -2,6 +2,7 @@ import 'package:al_qibla/provider/app_provider.dart';
 import 'package:al_qibla/widgets/home_drawer.dart';
 
 import 'package:flutter/material.dart';
+import 'package:home_widget/home_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/mosque_image.dart';
@@ -22,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    HomeWidget.setAppGroupId("group.com.jafar.alQiblaWidget");
     WidgetsBinding.instance?.addObserver(this);
     initHomePage =
         Provider.of<AppProvider>(context, listen: false).initStateHomePage();

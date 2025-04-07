@@ -25,8 +25,11 @@ dependencies:
   system_settings: ^2.1.0
   table_calendar: ^3.0.9
   timezone: ^0.10.0
-  workmanager: ^0.5.1
   win32: ^5.5.3
+  workmanager:
+    git:
+      url: https://github.com/fluttercommunity/flutter_workmanager.git
+      ref: b783000
 
 dev_dependencies:
   flutter_test:

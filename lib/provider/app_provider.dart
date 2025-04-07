@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:al_qibla/class/notifications_api.dart';
+import 'package:al_qibla/workmanager/workmanager_function.dart';
 import 'package:flutter/services.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:al_qibla/class/city_class.dart';
@@ -779,6 +780,8 @@ class AppProvider extends ChangeNotifier {
           await getNext10DaysPrayerTimes();
       await schedulePrayerNotifications(next10DaysPrayerTimes);
     }
+
+    updateWidget();
 
     notifyListeners();
   }

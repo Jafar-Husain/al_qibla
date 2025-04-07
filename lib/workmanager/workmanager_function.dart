@@ -7,20 +7,20 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 
 final Map<String, CalculationParameters> calculationMethodsMap = {
-    'MuslimWorldLeague': CalculationMethod.muslimWorldLeague(),
-    'Egyptian': CalculationMethod.egyptian(),
-    'Karachi': CalculationMethod.karachi(),
-    'UmmAlQura': CalculationMethod.ummAlQura(),
-    'Dubai': CalculationMethod.dubai(),
-    'MoonsightingCommittee': CalculationMethod.moonsightingCommittee(),
-    'NorthAmerica': CalculationMethod.northAmerica(),
-    'Kuwait': CalculationMethod.kuwait(),
-    'Qatar': CalculationMethod.qatar(),
-    'Singapore': CalculationMethod.singapore(),
-    'Tehran': CalculationMethod.tehran(),
-    'Turkey': CalculationMethod.turkiye(),
-    'Morocco': CalculationMethod.morocco(),
-  };
+  'MuslimWorldLeague': CalculationMethod.muslimWorldLeague(),
+  'Egyptian': CalculationMethod.egyptian(),
+  'Karachi': CalculationMethod.karachi(),
+  'UmmAlQura': CalculationMethod.ummAlQura(),
+  'Dubai': CalculationMethod.dubai(),
+  'MoonsightingCommittee': CalculationMethod.moonsightingCommittee(),
+  'NorthAmerica': CalculationMethod.northAmerica(),
+  'Kuwait': CalculationMethod.kuwait(),
+  'Qatar': CalculationMethod.qatar(),
+  'Singapore': CalculationMethod.singapore(),
+  'Tehran': CalculationMethod.tehran(),
+  'Turkey': CalculationMethod.turkiye(),
+  'Morocco': CalculationMethod.morocco(),
+};
 
 Future<PrayerTimes> calculatePrayerTimes(
   double latitude,
@@ -34,7 +34,11 @@ Future<PrayerTimes> calculatePrayerTimes(
   CalculationParameters params = method;
   params.madhab = madhab;
   params.highLatitudeRule = highLatitudeRule;
-  PrayerTimes prayerTimes = PrayerTimes(date: date,coordinates: coordinates,calculationParameters: params);
+  PrayerTimes prayerTimes = PrayerTimes(
+    date: date,
+    coordinates: coordinates,
+    calculationParameters: params,
+  );
   return prayerTimes;
 }
 
@@ -63,21 +67,32 @@ Future<bool?> updateWidget() async {
   PrayerTimes prayerTimes = await calculatePrayerTimes(
       latitude, longitude, method, madhab, highLatitudeRule, DateTime.now());
 
-  List listNextPrayer = await setNextPrayerNameFromPrayerTimes(prayerTimes);
+  tz.initializeTimeZones();
+  String ti = await FlutterNativeTimezone.getLocalTimezone();
+  final timezone = tz.getLocation(ti);
+  
+  // Convert DateTime objects to timestamp (milliseconds since epoch)
+  // This is better for cross-platform data transfer
+  int fajrTimestamp = tz.TZDateTime.from(prayerTimes.fajr!, timezone).millisecondsSinceEpoch;
+  int dhuhrTimestamp = tz.TZDateTime.from(prayerTimes.dhuhr!, timezone).millisecondsSinceEpoch;
+  int asrTimestamp = tz.TZDateTime.from(prayerTimes.asr!, timezone).millisecondsSinceEpoch;
+  int maghribTimestamp = tz.TZDateTime.from(prayerTimes.maghrib!, timezone).millisecondsSinceEpoch;
+  int ishaTimestamp = tz.TZDateTime.from(prayerTimes.isha!, timezone).millisecondsSinceEpoch;
 
-  HomeWidget.saveWidgetData(
-    'title',
-    listNextPrayer[0],
-  );
-  HomeWidget.saveWidgetData(
-    'message',
-    DateFormat('HH:mm').format(listNextPrayer[1]),
-  );
-  HomeWidget.updateWidget(
-    name: 'homescreenWidget',
-    iOSName: 'homescreenWidget',
-  );
+  // Save as timestamps (integer values)
+  await HomeWidget.saveWidgetData<int>("fajrTime", fajrTimestamp);
+  await HomeWidget.saveWidgetData<int>("dhuhrTime", dhuhrTimestamp);
+  await HomeWidget.saveWidgetData<int>("asrTime", asrTimestamp);
+  await HomeWidget.saveWidgetData<int>("maghribTime", maghribTimestamp);
+  await HomeWidget.saveWidgetData<int>("ishaTime", ishaTimestamp);
+  await HomeWidget.saveWidgetData<String>("cityName", cityName);
 
-  return true; // Return true if the update is successful
+  // Set a last updated timestamp for the widget to know data is fresh
+  await HomeWidget.saveWidgetData<int>("lastUpdated", DateTime.now().millisecondsSinceEpoch);
+
+  // Update the widget
+  return await HomeWidget.updateWidget(
+    name: 'alQiblaWidget',
+    iOSName: 'alQiblaWidget',
+  );
 }
-

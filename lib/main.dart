@@ -12,16 +12,29 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:workmanager/workmanager.dart';
 
-
+@pragma(
+    'vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) {
+    updateWidget();
+    print("updated widget"); //simpleTask will be emitted here.
+    return Future.value(true);
+  });
+}
 
 void main() async {
-
-
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize notifications
   await NotificationApi.init(initScheduled: true);
-   
+
+  Workmanager().initialize(
+      callbackDispatcher, // The top level function, aka callbackDispatcher
+      isInDebugMode:
+          true // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
+      );
+  Workmanager().registerOneOffTask("task-identifier", "simpleTask");
+
   runApp(const MainApp());
 }
 
@@ -31,19 +44,17 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]);
+      DeviceOrientation.portraitUp,
+    ]);
     return ChangeNotifierProvider(
       create: (context) => AppProvider(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          
-            colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue),
-            dialogBackgroundColor: Colors.grey[350],
+          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue),
+          dialogBackgroundColor: Colors.grey[350],
           // Define your custom theme here
           textTheme: const TextTheme(
-            
             bodyLarge: TextStyle(color: Colors.white),
             bodyMedium: TextStyle(color: Colors.white),
             bodySmall:
