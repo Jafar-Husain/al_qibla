@@ -241,55 +241,74 @@ struct SimpleEntry: TimelineEntry {
 struct alQiblaWidgetEntryView: View {
     var entry: SimpleEntry
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.widgetFamily) var family
 
     var body: some View {
         let isDark = colorScheme == .dark
         let textColor = isDark ? Color.white : Color.black
-        
         let nextPrayer = nextPrayerTime(from: entry)
-        
-        HStack(spacing: 16) {
-            // LEFT SIDE — Highlighted Prayer
-            VStack(alignment: .leading, spacing: 4) {
-                Text(nextPrayer.name)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .foregroundColor(.green)
 
-                Text(format(nextPrayer.time))
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.green)
-
-                HStack(spacing: 4) {
-                    Image(systemName: "location.fill")
-                        .foregroundColor(.green)
-                        .font(.caption)
-                    Text(entry.city)
+        switch family {
+        case .accessoryCircular:
+            // LOCKSCREEN circular widget
+            ZStack {
+                Circle()
+                    .fill(Color.green.opacity(0.5))
+                VStack(spacing: 2) {
+                    Text(getAbbreviation(for: nextPrayer.name))
                         .font(.caption)
                         .foregroundColor(textColor)
+                    Text(format(nextPrayer.time))
+                        .font(.system(size: 15))
+                        .foregroundColor(textColor)
                 }
-                .padding(.top, 4)
-
-                Spacer()
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
 
-            // RIGHT SIDE — Prayer Times
-            VStack(alignment: .leading) {
-                prayerRow(name: "Fajr", time: format(entry.fajr), textColor: textColor)
-                Spacer()
-                prayerRow(name: "Dhuhr", time: format(entry.dhuhr), textColor: textColor)
-                Spacer()
-                prayerRow(name: "Asr", time: format(entry.asr), textColor: textColor)
-                Spacer()
-                prayerRow(name: "Maghrib", time: format(entry.maghrib), textColor: textColor)
-                Spacer()
-                prayerRow(name: "Isha", time: format(entry.isha), textColor: textColor)
+        default:
+            // REGULAR WIDGET
+            HStack(spacing: 16) {
+                // LEFT SIDE — Highlighted Prayer
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(nextPrayer.name)
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundColor(.green)
+
+                    Text(format(nextPrayer.time))
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.green)
+
+                    HStack(spacing: 4) {
+                        Image(systemName: "location.fill")
+                            .foregroundColor(.green)
+                            .font(.caption)
+                        Text(entry.city)
+                            .font(.caption)
+                            .foregroundColor(textColor)
+                    }
+                    .padding(.top, 4)
+
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                // RIGHT SIDE — Prayer Times
+                VStack(alignment: .leading) {
+                    prayerRow(name: "Fajr", time: format(entry.fajr), textColor: textColor)
+                    Spacer()
+                    prayerRow(name: "Dhuhr", time: format(entry.dhuhr), textColor: textColor)
+                    Spacer()
+                    prayerRow(name: "Asr", time: format(entry.asr), textColor: textColor)
+                    Spacer()
+                    prayerRow(name: "Maghrib", time: format(entry.maghrib), textColor: textColor)
+                    Spacer()
+                    prayerRow(name: "Isha", time: format(entry.isha), textColor: textColor)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+            .padding()
         }
-        .padding()
     }
 
     func prayerRow(name: String, time: String, textColor: Color) -> some View {
@@ -309,6 +328,16 @@ struct alQiblaWidgetEntryView: View {
         formatter.dateFormat = "HH:mm"
         return formatter.string(from: date)
     }
+    func getAbbreviation(for prayerName: String) -> String {
+        switch prayerName {
+        case "Fajr": return "FJR"
+        case "Dhuhr": return "DHU"
+        case "Asr": return "ASR"
+        case "Maghrib": return "MGH"
+        case "Isha": return "ISH"
+        default: return "FJR"
+        }
+    }
 
     func nextPrayerTime(from entry: SimpleEntry) -> (name: String, time: Date) {
         let now = Date()
@@ -319,19 +348,19 @@ struct alQiblaWidgetEntryView: View {
             ("Maghrib", entry.maghrib),
             ("Isha", entry.isha)
         ]
-        
-        // Filter out prayers that have passed
-        let upcomingPrayers = prayers.filter { $0.1 > now }
-        
-        // Find the closest upcoming prayer
-        if let next = upcomingPrayers.min(by: { $0.1 < $1.1 }) {
+
+        if let next = prayers.first(where: { $0.1 > now }) {
             return next
-        } else {
-            // If all prayers passed, return the first prayer for tomorrow
-            return ("Fajr (Tomorrow)", entry.fajr)
         }
+        // If all prayers passed, fallback to next day's Fajr
+        return ("Fajr", entry.fajr)
     }
 }
+
+
+
+
+
 
 // MARK: - Widget Declaration
 struct alQiblaWidget: Widget {
@@ -340,22 +369,31 @@ struct alQiblaWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             if #available(iOS 17.0, *) {
-                alQiblaWidgetEntryView(entry: entry)
-                    .containerBackground(.fill.tertiary, for: .widget)
-            } else {
-                alQiblaWidgetEntryView(entry: entry)
-                    .padding()
-                    .background()
-            }
+                            // Use environment to determine where widget is being displayed
+                            @Environment(\.widgetFamily) var family
+                            
+                            if family == .accessoryCircular {
+                                // Lock Screen Widget
+                                alQiblaWidgetEntryView(entry: entry)
+                            } else {
+                                // Original Home Screen Widget
+                                alQiblaWidgetEntryView(entry: entry)
+                                    .containerBackground(.fill.tertiary, for: .widget)
+                            }
+                        } else {
+                            alQiblaWidgetEntryView(entry: entry)
+                                .padding()
+                                .background()
+                        }
         }
         .configurationDisplayName("Prayer Times")
         .description("Displays daily Islamic prayer times.")
-        .supportedFamilies([.systemMedium])
+        .supportedFamilies([.systemMedium,.accessoryCircular,])
     }
 }
 
 // MARK: - Preview
-#Preview(as: .systemMedium) {
+#Preview(as: .accessoryCircular) {
     alQiblaWidget()
 } timeline: {
     SimpleEntry(
