@@ -16,8 +16,8 @@ import 'package:workmanager/workmanager.dart';
     'vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) {
-    updateWidget();
-    print("updated widget"); //simpleTask will be emitted here.
+  
+     //simpleTask will be emitted here.
     return Future.value(true);
   });
 }
@@ -30,10 +30,11 @@ void main() async {
 
   Workmanager().initialize(
       callbackDispatcher, // The top level function, aka callbackDispatcher
-      isInDebugMode:
-          true // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
+      isInDebugMode: false,
+       // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
       );
-  Workmanager().registerOneOffTask("task-identifier", "simpleTask");
+      
+  Workmanager().registerOneOffTask("task-identifier", "simpleTask",initialDelay: Duration(seconds:10));
 
   runApp(const MainApp());
 }

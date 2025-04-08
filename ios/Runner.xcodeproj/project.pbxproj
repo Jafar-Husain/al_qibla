@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0C0FA9662DA51F6800AE1BF5 /* Adhan in Frameworks */ = {isa = PBXBuildFile; productRef = 0C0FA9652DA51F6800AE1BF5 /* Adhan */; };
 		0C1E4E382D9D8081003DEEC2 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBC30D92AA75A07000AC272 /* WidgetKit.framework */; };
 		0C1E4E392D9D8081003DEEC2 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CBC30DB2AA75A07000AC272 /* SwiftUI.framework */; };
 		0C1E4E462D9D8083003DEEC2 /* alQiblaWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0C1E4E372D9D8081003DEEC2 /* alQiblaWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -111,10 +112,6 @@
 			exceptions = (
 				0C1E4E4A2D9D8083003DEEC2 /* Exceptions for "alQiblaWidget" folder in "alQiblaWidgetExtension" target */,
 			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
 			path = alQiblaWidget;
 			sourceTree = "<group>";
 		};
@@ -125,6 +122,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C0FA9662DA51F6800AE1BF5 /* Adhan in Frameworks */,
 				0C1E4E392D9D8081003DEEC2 /* SwiftUI.framework in Frameworks */,
 				0C1E4E382D9D8081003DEEC2 /* WidgetKit.framework in Frameworks */,
 			);
@@ -325,7 +323,6 @@
 				};
 			};
 			buildConfigurationList = 97C146E91CF9000F007C117D /* Build configuration list for PBXProject "Runner" */;
-			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -333,6 +330,10 @@
 				Base,
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
+			packageReferences = (
+				0C0FA9632DA51E7E00AE1BF5 /* XCRemoteSwiftPackageReference "adhan-swift" */,
+			);
+			preferredProjectObjectVersion = 77;
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -989,6 +990,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		0C0FA9632DA51E7E00AE1BF5 /* XCRemoteSwiftPackageReference "adhan-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/batoulapps/adhan-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.4.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0C0FA9652DA51F6800AE1BF5 /* Adhan */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0C0FA9632DA51E7E00AE1BF5 /* XCRemoteSwiftPackageReference "adhan-swift" */;
+			productName = Adhan;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 97C146E61CF9000F007C117D /* Project object */;
 }
