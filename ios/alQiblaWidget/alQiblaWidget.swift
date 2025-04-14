@@ -8,6 +8,7 @@ struct Provider: TimelineProvider {
         SimpleEntry(
             date: Date(),
             fajr: Date(),
+            sunrise:Date(),
             dhuhr: Date(),
             asr: Date(),
             maghrib: Date(),
@@ -24,21 +25,33 @@ struct Provider: TimelineProvider {
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<SimpleEntry>) -> Void) {
         getWidgetData { entry in
-            // Create multiple entries for today and tomorrow
+            // Create entries for today and tomorrow
             var entries: [SimpleEntry] = [entry]
             
-            // Calculate when the next prayer time is
-            let nextPrayerTime = self.nextPrayerTime(from: entry)
+            // Calculate the next prayer time
+            let nextPrayer = self.nextPrayerTime(from: entry)
             
-            // Schedule an update right after the next prayer
-            let nextUpdateDate = Calendar.current.date(byAdding: .minute, value: 1, to: nextPrayerTime.time)!
+            // Get midnight for the next day + 1 minute
+            let midnight = Calendar.current.startOfDay(for: Calendar.current.date(byAdding: .day, value: 1, to: Date())!)
+            let midnightPlusOne = Calendar.current.date(byAdding: .minute, value: 1, to: midnight)!
             
-            // Add an entry for tomorrow too
+            // Determine the next update date
+            var nextUpdateDate: Date
+            
+            if nextPrayer.time >= midnight {
+                // Update 1 minute after midnight
+                nextUpdateDate = midnightPlusOne
+            } else {
+                // Update 1 minute after the next prayer
+                nextUpdateDate = Calendar.current.date(byAdding: .minute, value: 1, to: nextPrayer.time)!
+            }
+            
+            // Add tomorrow's entry to the timeline
             if let tomorrowEntry = self.calculateTomorrowEntry(from: entry) {
                 entries.append(tomorrowEntry)
             }
             
-            // Create a timeline that updates after the next prayer
+            // Create the timeline
             let timeline = Timeline(entries: entries, policy: .after(nextUpdateDate))
             completion(timeline)
         }
@@ -194,6 +207,7 @@ struct Provider: TimelineProvider {
         return SimpleEntry(
             date: forDate,
             fajr: prayerTimes!.fajr,
+            sunrise:prayerTimes!.sunrise,
             dhuhr: prayerTimes!.dhuhr,
             asr: prayerTimes!.asr,
             maghrib: prayerTimes!.maghrib,
@@ -221,7 +235,7 @@ struct Provider: TimelineProvider {
             return next
         } else {
             // If all prayers passed, return the first prayer for tomorrow
-            return ("Fajr (Tomorrow)", entry.fajr)
+            return ("Fajr Tomorrow", entry.fajr)
         }
     }
 }
@@ -230,6 +244,7 @@ struct Provider: TimelineProvider {
 struct SimpleEntry: TimelineEntry {
     let date: Date
     var fajr: Date
+    var sunrise:Date
     var dhuhr: Date
     var asr: Date
     var maghrib: Date
@@ -258,11 +273,58 @@ struct alQiblaWidgetEntryView: View {
                     Text(getAbbreviation(for: nextPrayer.name))
                         .font(.caption)
                         .foregroundColor(textColor)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5) // scales down if needed
+
                     Text(format(nextPrayer.time))
                         .font(.system(size: 15))
                         .foregroundColor(textColor)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
                 }
+                .padding(4) // optional: add padding to prevent clipping
             }
+
+            
+        case .accessoryRectangular:
+            HStack(spacing: 6) {
+                PrayerTimeView(label: "FJR", icon: "sun.and.horizon.fill", time: format(entry.fajr))
+                PrayerTimeView(label: "DHU", icon: "sun.max.fill", time: format(entry.dhuhr))
+                PrayerTimeView(label: "ASR", icon: "cloud.sun.fill", time: format(entry.asr))
+                PrayerTimeView(label: "MGH", icon: "sunset.fill", time: format(entry.maghrib))
+                PrayerTimeView(label: "ISH", icon: "moon.fill", time: format(entry.isha))
+            }
+            
+        case .systemSmall:
+            
+            VStack(alignment: .center, spacing: 4) {
+                Text(nextPrayer.name)
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .foregroundColor(.green)
+
+                Text(format(nextPrayer.time))
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.green)
+
+                HStack(spacing: 4) {
+                    Image(systemName: "location.fill")
+                        .foregroundColor(.green)
+                        .font(.caption)
+                    Text(entry.city)
+                        .font(.caption)
+                        .foregroundColor(textColor)
+                }
+                .padding(.top, 4)
+
+                
+            }
+            
+
+            
+        
+            
 
         default:
             // REGULAR WIDGET
@@ -310,6 +372,36 @@ struct alQiblaWidgetEntryView: View {
             .padding()
         }
     }
+    
+    struct PrayerTimeView: View {
+        let label: String
+        let icon: String
+        let time: String
+
+        var body: some View {
+            VStack(spacing: 2) {
+                Image(systemName: icon)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 11)
+                    .foregroundColor(.white)
+
+                Text(label)
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundColor(.white)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+
+                Text(time)
+                    .font(.system(size: 8,weight: .semibold))
+                    .foregroundColor(.white)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.3)
+                    
+            }
+            .frame(maxWidth: .infinity)
+        }
+    }
 
     func prayerRow(name: String, time: String, textColor: Color) -> some View {
         HStack {
@@ -353,7 +445,7 @@ struct alQiblaWidgetEntryView: View {
             return next
         }
         // If all prayers passed, fallback to next day's Fajr
-        return ("Fajr", entry.fajr)
+        return ("Isha", entry.isha)
     }
 }
 
@@ -372,7 +464,7 @@ struct alQiblaWidget: Widget {
                             // Use environment to determine where widget is being displayed
                             @Environment(\.widgetFamily) var family
                             
-                            if family == .accessoryCircular {
+                if family == .accessoryCircular  {
                                 // Lock Screen Widget
                                 alQiblaWidgetEntryView(entry: entry)
                             } else {
@@ -388,7 +480,7 @@ struct alQiblaWidget: Widget {
         }
         .configurationDisplayName("Prayer Times")
         .description("Displays daily Islamic prayer times.")
-        .supportedFamilies([.systemMedium,.accessoryCircular,])
+        .supportedFamilies([.systemMedium,.accessoryCircular,.systemSmall,.accessoryRectangular])
     }
 }
 
@@ -397,12 +489,17 @@ struct alQiblaWidget: Widget {
     alQiblaWidget()
 } timeline: {
     SimpleEntry(
-        date: .now,
+        date: Calendar.current.date(bySettingHour: 00, minute: 30, second: 0, of: .now)!,
         fajr: Calendar.current.date(bySettingHour: 5, minute: 43, second: 0, of: .now)!,
+        sunrise: Calendar.current.date(bySettingHour: 6, minute: 43, second: 0, of: .now)!,
         dhuhr: Calendar.current.date(bySettingHour: 13, minute: 3, second: 0, of: .now)!,
-        asr: Calendar.current.date(bySettingHour: 16, minute: 5, second: 0, of: .now)!,
-        maghrib: Calendar.current.date(bySettingHour: 18, minute: 45, second: 0, of: .now)!,
-        isha: Calendar.current.date(bySettingHour: 20, minute: 11, second: 0, of: .now)!,
+        asr: Calendar.current.date(bySettingHour: 18, minute: 5, second: 0, of: .now)!,
+        maghrib: Calendar.current.date(bySettingHour: 22, minute: 45, second: 0, of: .now)!,
+        isha: Calendar.current.date(bySettingHour: 23, minute: 11, second: 0, of: .now)!,
         city: "Genève"
     )
+    
+    
 }
+
+

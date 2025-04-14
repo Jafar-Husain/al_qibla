@@ -9,6 +9,7 @@ import 'package:al_qibla/screens/settings_screen.dart';
 import 'package:al_qibla/workmanager/workmanager_function.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:home_widget/home_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -25,7 +26,7 @@ void callbackDispatcher() {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  HomeWidget.setAppGroupId("group.com.jafar.alQiblaWidget");
   // Initialize notifications
   await NotificationApi.init(initScheduled: true);
 

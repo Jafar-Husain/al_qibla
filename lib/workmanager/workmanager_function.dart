@@ -73,9 +73,18 @@ Future<bool?> updateWidget() async {
   await HomeWidget.saveWidgetData<String>("cityName", cityName);
 
   // Set a last updated timestamp for the widget to know data is fresh
-  await HomeWidget.saveWidgetData<int>("lastUpdated", DateTime.now().millisecondsSinceEpoch);
+  await HomeWidget.saveWidgetData<int>(
+      "lastUpdated", DateTime.now().millisecondsSinceEpoch);
 
   // Update the widget
+  await HomeWidget.updateWidget(
+    name: 'FajrtoDhuhrWidget',
+    iOSName: 'FajrtoDhuhrWidget',
+  );
+  await HomeWidget.updateWidget(
+    name: 'AsrToIshaWidget',
+    iOSName: 'AsrToIshaWidget',
+  );
   return await HomeWidget.updateWidget(
     name: 'alQiblaWidget',
     iOSName: 'alQiblaWidget',

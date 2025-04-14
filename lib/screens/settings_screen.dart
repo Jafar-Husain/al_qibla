@@ -118,31 +118,21 @@ class _SettingScreenState extends State<SettingScreen> {
                                     Provider.of<AppProvider>(context,
                                             listen: false)
                                         .setMethod(newValue!);
-          
+
                                     setState(() {
                                       selectedMehthod = newValue!;
                                     });
+
+                                    Navigator.pop(context); // Close the dialog
+                                    Provider.of<AppProvider>(context, listen: false)
+                                        .getPrayerTimes(refresh: true);
+
                                   },
                                 );
                               },
                             ),
                           ),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop(); // Close the dialog
-                              },
-                              child: Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                // Perform an action with the selected option
-          
-                                Navigator.of(context).pop(); // Close the dialog
-                              },
-                              child: Text('OK'),
-                            ),
-                          ],
+                          
                         );
                       });
                     },
@@ -200,27 +190,15 @@ class _SettingScreenState extends State<SettingScreen> {
                                     Provider.of<AppProvider>(context,
                                             listen: false)
                                         .setMadhab(newValue!);
+                                    Navigator.pop(context); // Close the dialog
+                                    Provider.of<AppProvider>(context, listen: false)
+                                        .getPrayerTimes(refresh: true);
                                   },
                                 );
                               },
                             ),
                           ),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop(); // Close the dialog
-                              },
-                              child: Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                // Perform an action with the selected option
-          
-                                Navigator.of(context).pop(); // Close the dialog
-                              },
-                              child: Text('OK'),
-                            ),
-                          ],
+                          
                         );
                       });
                     },
@@ -278,27 +256,15 @@ class _SettingScreenState extends State<SettingScreen> {
                                     Provider.of<AppProvider>(context,
                                             listen: false)
                                         .setHighLatitudeRule(newValue!);
+                                  Navigator.pop(context); // Close the dialog
+                                    Provider.of<AppProvider>(context, listen: false)
+                                        .getPrayerTimes(refresh: true);
                                   },
                                 );
                               },
                             ),
                           ),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop(); // Close the dialog
-                              },
-                              child: Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                // Perform an action with the selected option
-          
-                                Navigator.of(context).pop(); // Close the dialog
-                              },
-                              child: Text('OK'),
-                            ),
-                          ],
+                          
                         );
                       });
                     },

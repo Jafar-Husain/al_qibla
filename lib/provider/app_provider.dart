@@ -121,8 +121,8 @@ class AppProvider extends ChangeNotifier {
   var currentSecondGrad = const Color(0xff2e2855);
   var currentMosqueColor = Colors.black;
   late List prayerTimesList;
-  late var nextPrayerTime;
-  late var nextPrayerName;
+  var nextPrayerTime;
+  var nextPrayerName;
   Widget currentSVG = const moonImage();
   FixedExtentScrollController scrollController = FixedExtentScrollController();
   bool _timeFormat24 = true; // modified removed late testing!

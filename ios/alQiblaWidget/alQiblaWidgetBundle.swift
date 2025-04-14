@@ -12,6 +12,10 @@ import SwiftUI
 struct alQiblaWidgetBundle: WidgetBundle {
     var body: some Widget {
         alQiblaWidget()
-        alQiblaWidgetControl()
+        AsrToIshaWidget()
+        FajrToDhuhrWidget()
+        //alQiblaWidgetControl()
     }
 }
+
+
