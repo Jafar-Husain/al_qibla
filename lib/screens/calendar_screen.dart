@@ -92,6 +92,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        elevation: 0,
+        foregroundColor: Colors.black,
+        title: Text("Calendar",style: TextStyle(fontWeight: FontWeight.bold),),
+        backgroundColor: Colors.transparent,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: SafeArea(
         bottom: false,
         child: Column(

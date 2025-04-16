@@ -1,10 +1,8 @@
 import 'package:al_qibla/provider/app_provider.dart';
 import 'package:al_qibla/widgets/home_drawer.dart';
-
 import 'package:flutter/material.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:provider/provider.dart';
-
 import '../widgets/mosque_image.dart';
 import '../widgets/prayer_picker.dart';
 import '../widgets/top_info.dart';
@@ -17,16 +15,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
-  late Future<void> initHomePage;
-  bool _isHomePageInitialized = false; // Flag for initialization state
-
   @override
   void initState() {
     super.initState();
     HomeWidget.setAppGroupId("group.com.jafar.alQiblaWidget");
     WidgetsBinding.instance?.addObserver(this);
-    initHomePage =
-        Provider.of<AppProvider>(context, listen: false).initStateHomePage();
+
+    // Initialize prayer times
+    Provider.of<AppProvider>(context, listen: false).initStateHomePage();
+    //Provider.of<AppProvider>(context, listen: false).getPrayerTimes(refresh: true);
   }
 
   @override
@@ -38,20 +35,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      if (!_isHomePageInitialized) {
-        // Initialize data only if not already done
-        initHomePage = Provider.of<AppProvider>(context, listen: false)
-            .initStateHomePage();
-        _isHomePageInitialized = true;
-      }
       Provider.of<AppProvider>(context, listen: false)
           .getPrayerTimes(refresh: true);
-      print("resumed");
+      print("App resumed");
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final appProvider = Provider.of<AppProvider>(context);
+
     return Scaffold(
       drawer: HomeDrawer(),
       body: Container(
@@ -62,19 +55,27 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Provider.of<AppProvider>(context).currentFirstGrad,
-              Provider.of<AppProvider>(context).currentSecondGrad,
+              appProvider.currentFirstGrad,
+              appProvider.currentSecondGrad,
             ],
           ),
         ),
         child: Stack(
           children: [
-            // Show basic UI elements immediately:
-            topInfo(),
+            // Show basic UI elements
+
+            appProvider.nextPrayerTime != null ? topInfo() : const SizedBox(),
             mosqueImage(),
-            Provider.of<AppProvider>(context).currentSVG,
-            // Conditionally show the prayer picker only after initialization:
-            prayerPicker(), // Placeholder
+            appProvider.currentSVG,
+            // Conditionally show the prayer picker
+            appProvider.prayerTimesList.isNotEmpty
+                ? prayerPicker()
+                : const Center(
+                    child: Text(
+                      "Loading prayer times...",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
           ],
         ),
       ),

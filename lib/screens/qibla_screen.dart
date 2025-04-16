@@ -73,6 +73,12 @@ class _QiblaScreenState extends State<QiblaScreen> {
             backgroundColor: Colors.black,
             iconTheme: IconThemeData(color: Colors.white),
             centerTitle: true,
+            leading: IconButton(
+    icon: Icon(Icons.arrow_back, color: Colors.white),
+    onPressed: () {
+      Navigator.pop(context); // Navigate back to the previous screen
+    },
+  ),
           ),
           backgroundColor: Colors.black,
           body: Column(

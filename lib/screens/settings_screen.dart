@@ -44,21 +44,27 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromRGBO(245, 244, 255, 1.0),
+      appBar: AppBar(
+  backgroundColor: Colors.transparent,
+  elevation: 0,
+  leading: IconButton(
+    icon: Icon(Icons.arrow_back, color: Colors.black),
+    onPressed: () {
+      Navigator.pop(context); // Navigate back to the previous screen
+    },
+  ),
+  title: Text(
+    "Settings",
+    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+  ),
+  centerTitle: true, // Align the title to the left
+),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: EdgeInsets.fromLTRB(20, 25, 0, 0),
-                child: Text(
-                  "Settings",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 35,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
+              
               Padding(
                 padding: EdgeInsets.fromLTRB(20, 30, 0, 0),
                 child: Text(
