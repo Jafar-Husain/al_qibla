@@ -2,6 +2,7 @@
 
 import 'package:adhan_dart/adhan_dart.dart';
 import 'package:al_qibla/provider/app_provider.dart';
+import 'package:al_qibla/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/diagnostics.dart';
 import 'package:intl/intl.dart';
@@ -92,35 +93,35 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0,
-        foregroundColor: Colors.black,
-        title: Text("Calendar",style: TextStyle(fontWeight: FontWeight.bold),),
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+      appBar: const CustomAppBar(
+        title: "Calendar",
       ),
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
             TableCalendar(
-              
               calendarStyle: CalendarStyle(
                 defaultTextStyle: TextStyle(color: Colors.black),
                 outsideTextStyle: TextStyle(color: Colors.black),
               ),
               headerVisible: true,
               headerStyle: HeaderStyle(
-                leftChevronIcon: Icon(Icons.chevron_left,color: Colors.black,),
-                rightChevronIcon: Icon(Icons.chevron_right,color: Colors.black,),
-    titleTextStyle: TextStyle(color:Colors.black,fontSize: 17,fontWeight: FontWeight.w700),
-    formatButtonVisible: false, // Set to true if you want format buttons
-  ),
+                leftChevronIcon: Icon(
+                  Icons.chevron_left,
+                  color: Colors.black,
+                ),
+                rightChevronIcon: Icon(
+                  Icons.chevron_right,
+                  color: Colors.black,
+                ),
+                titleTextStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700),
+                formatButtonVisible:
+                    false, // Set to true if you want format buttons
+              ),
               focusedDay: slcDay,
               selectedDayPredicate: (day) {
                 return isSameDay(slcDay, day);

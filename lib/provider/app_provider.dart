@@ -11,7 +11,6 @@ import 'package:adhan_dart/adhan_dart.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:lat_lng_to_timezone/lat_lng_to_timezone.dart' as tzmap;
@@ -121,10 +120,11 @@ class AppProvider extends ChangeNotifier {
   var currentSecondGrad = const Color(0xff2e2855);
   var currentMosqueColor = Colors.black;
   late List prayerTimesList;
-  var nextPrayerTime = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0);
+  var nextPrayerTime = DateTime(
+      DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0);
   late var nextPrayerName;
   Widget currentSVG = const moonImage();
-  FixedExtentScrollController scrollController = FixedExtentScrollController(); 
+  FixedExtentScrollController scrollController = FixedExtentScrollController();
   bool _timeFormat24 = true; // modified removed late testing!
   List<String> _myCities = [];
   List<City> _myCityCities = [];
@@ -445,8 +445,10 @@ class AppProvider extends ChangeNotifier {
   }
 
   void animateScrollController() {
-    scrollController.animateToItem(prayerNameToValue[nextPrayerName]!,
-        duration: Duration(milliseconds: 10), curve: Curves.easeIn);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      scrollController.animateToItem(prayerNameToValue[nextPrayerName]!,
+          duration: Duration(milliseconds: 300), curve: Curves.easeIn);
+    });
     notifyListeners();
   }
 
@@ -731,69 +733,92 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> getPrayerTimes({bool init = false, bool refresh = true}) async {
-  await getAllSharedPref();
-  var prayerTimes;
+    await getAllSharedPref();
+    var prayerTimes;
 
-  // Helper function to handle common tasks
-  Future<void> handlePrayerTimes(PrayerTimes prayerTimes) async {
-    prayerTimesList = await calculatePrayerTimeFromPrayerTimes(prayerTimes);
-    await setNextPrayerNameFromPrayerTimes(prayerTimes);
-    await getMyCitiesList();
-    await getFajrMissed();
-    await getDhuhrMissed();
-    await getAsrMissed();
-    await getMaghribMissed();
-    await getIshaMissed();
+    // Helper function to handle common tasks
+    Future<void> handlePrayerTimes(PrayerTimes prayerTimes) async {
+      prayerTimesList = await calculatePrayerTimeFromPrayerTimes(prayerTimes);
+      await setNextPrayerNameFromPrayerTimes(prayerTimes);
+      await getMyCitiesList();
+      await getFajrMissed();
+      await getDhuhrMissed();
+      await getAsrMissed();
+      await getMaghribMissed();
+      await getIshaMissed();
+    }
+
+    if (init) {
+      // Initial setup
+      prayerTimes = await calculatePrayerTimes(
+        _latitude,
+        _longitude,
+        _method,
+        _madhab,
+        _highLatitudeRule,
+        DateTime.now(),
+      );
+      await handlePrayerTimes(prayerTimes);
+      await setCityName(_longitude, _latitude);
+      await initScrollController();
+      animateScrollController();
+
+      final List<DateTime> next10DaysPrayerTimes =
+          await getNext10DaysPrayerTimes();
+      await schedulePrayerNotifications(next10DaysPrayerTimes);
+    }
+
+    if (refresh) {
+      // Refresh prayer times
+      print("deter 1");
+      try {
+        Position position = await determinePosition();
+
+        await setLongitutde(position.longitude);
+        await setLatitude(position.latitude);
+        await setCityName(position.longitude, position.latitude);
+
+        prayerTimes = await calculatePrayerTimes(
+          position.latitude,
+          position.longitude,
+          _method,
+          _madhab,
+          _highLatitudeRule,
+          DateTime.now(),
+        );
+        await handlePrayerTimes(prayerTimes);
+
+        animateScrollController();
+
+        final List<DateTime> next10DaysPrayerTimes =
+            await getNext10DaysPrayerTimes();
+        await schedulePrayerNotifications(next10DaysPrayerTimes);
+      } catch (e) {
+        // Location services are off or failed, use saved location data
+        print("Location services unavailable, using saved location: $e");
+
+        prayerTimes = await calculatePrayerTimes(
+          _latitude,
+          _longitude,
+          _method,
+          _madhab,
+          _highLatitudeRule,
+          DateTime.now(),
+        );
+        await handlePrayerTimes(prayerTimes);
+
+        animateScrollController();
+
+        final List<DateTime> next10DaysPrayerTimes =
+            await getNext10DaysPrayerTimes();
+        await schedulePrayerNotifications(next10DaysPrayerTimes);
+      }
+    }
+
+    updateWidget();
+    notifyListeners();
   }
 
-  if (init) {
-    // Initial setup
-    prayerTimes = await calculatePrayerTimes(
-      _latitude,
-      _longitude,
-      _method,
-      _madhab,
-      _highLatitudeRule,
-      DateTime.now(),
-    );
-    await handlePrayerTimes(prayerTimes);
-    await setCityName(_longitude, _latitude);
-    await initScrollController();
-
-    final List<DateTime> next10DaysPrayerTimes =
-        await getNext10DaysPrayerTimes();
-    await schedulePrayerNotifications(next10DaysPrayerTimes);
-  }
-
-  if (refresh) {
-    // Refresh prayer times
-    print("deter 1");
-    Position position = await determinePosition();
-
-    await setLongitutde(position.longitude);
-    await setLatitude(position.latitude);
-    await setCityName(position.longitude, position.latitude);
-
-    prayerTimes = await calculatePrayerTimes(
-      position.latitude,
-      position.longitude,
-      _method,
-      _madhab,
-      _highLatitudeRule,
-      DateTime.now(),
-    );
-    await handlePrayerTimes(prayerTimes);
-
-    animateScrollController();
-
-    final List<DateTime> next10DaysPrayerTimes =
-        await getNext10DaysPrayerTimes();
-    await schedulePrayerNotifications(next10DaysPrayerTimes);
-  }
-
-  updateWidget();
-  notifyListeners();
-}
   bool checkTimeFormat() {
     final now = DateTime.now();
 
@@ -894,19 +919,21 @@ class AppProvider extends ChangeNotifier {
     if (!prefs.containsKey('ishaMissed')) {
       await setIshaMissed(0);
     }
-    final DarwinInitializationSettings iOSInitializationSettings = 
-      DarwinInitializationSettings(
-        requestAlertPermission: true,
-        requestBadgePermission: true,
-        requestSoundPermission: true,
-      );
+    final DarwinInitializationSettings iOSInitializationSettings =
+        DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
     // Request notification permissions
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     final InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid, iOS:iOSInitializationSettings );
+        InitializationSettings(
+            android: initializationSettingsAndroid,
+            iOS: iOSInitializationSettings);
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
     final bool? result = await flutterLocalNotificationsPlugin
@@ -929,7 +956,7 @@ class AppProvider extends ChangeNotifier {
     if (!prefs.containsKey("latitude")) {
       await firstLaunch();
     }
-    
+
     await getPrayerTimes(init: true, refresh: false);
   }
 

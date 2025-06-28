@@ -1,6 +1,7 @@
 import 'package:adhan_dart/adhan_dart.dart';
 import 'package:al_qibla/provider/app_provider.dart';
 import 'package:al_qibla/widgets/compass_view.dart';
+import 'package:al_qibla/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:geolocator/geolocator.dart';
@@ -17,8 +18,10 @@ class _QiblaScreenState extends State<QiblaScreen> {
   double? _bearing = 0;
 
   void getQibla() async {
-    double long = await Provider.of<AppProvider>(context,listen: false).getLongitude();
-    double lat = await Provider.of<AppProvider>(context,listen: false).getLatitude();
+    double long =
+        await Provider.of<AppProvider>(context, listen: false).getLongitude();
+    double lat =
+        await Provider.of<AppProvider>(context, listen: false).getLatitude();
     print("getting qibla");
     setState(() {
       _bearing = Qibla.qibla(Coordinates(lat, long));
@@ -65,20 +68,10 @@ class _QiblaScreenState extends State<QiblaScreen> {
         }
 
         return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              "Compass",
-              style: TextStyle(color: Colors.white),
-            ),
+          appBar: const CustomAppBar(
+            title: "Compass",
             backgroundColor: Colors.black,
-            iconTheme: IconThemeData(color: Colors.white),
-            centerTitle: true,
-            leading: IconButton(
-    icon: Icon(Icons.arrow_back, color: Colors.white),
-    onPressed: () {
-      Navigator.pop(context); // Navigate back to the previous screen
-    },
-  ),
+            foregroundColor: Colors.white,
           ),
           backgroundColor: Colors.black,
           body: Column(

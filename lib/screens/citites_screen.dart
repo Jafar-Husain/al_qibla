@@ -6,6 +6,7 @@ import 'package:al_qibla/class/city_class.dart';
 import 'package:al_qibla/class/sting_extension.dart';
 import 'package:al_qibla/provider/app_provider.dart';
 import 'package:al_qibla/screens/calendar_screen.dart';
+import 'package:al_qibla/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -58,6 +59,31 @@ class CitiesScreen extends StatelessWidget {
                             filterCities(textEditingValue.text);
                         return suggestions;
                       },
+                      fieldViewBuilder: (BuildContext context,
+                          TextEditingController textEditingController,
+                          FocusNode focusNode,
+                          VoidCallback onFieldSubmitted) {
+                        return TextField(
+                          controller: textEditingController,
+                          focusNode: focusNode,
+                          style: TextStyle(
+                              color: Colors.black), // Explicit black text
+                          decoration: InputDecoration(
+                            hintText: 'Search for a city...',
+                            hintStyle: TextStyle(color: Colors.black54),
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: BorderSide(color: Colors.blue),
+                            ),
+                          ),
+                        );
+                      },
                       optionsViewBuilder: (BuildContext context,
                           AutocompleteOnSelected<Map<String, dynamic>>
                               onSelected,
@@ -66,6 +92,8 @@ class CitiesScreen extends StatelessWidget {
                           alignment: Alignment.topLeft,
                           child: Material(
                             elevation: 4.0,
+                            color:
+                                Colors.white, // Add explicit background color
                             child: SizedBox(
                               height: options.length > 2
                                   ? 180
@@ -74,23 +102,32 @@ class CitiesScreen extends StatelessWidget {
                                       : 70,
                               width: 232,
                               child: ListView.builder(
-                                  padding: const EdgeInsets.all(8.0),
-                                  itemCount: options.length,
-      
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    final Map<String, dynamic> city =
-                                        options.elementAt(index);
-                                    return GestureDetector(
-                                      onTap: () {
-                                        onSelected(city);
-                                      },
-                                      child: ListTile(
-                                        title: Text(
-                                            '${city['name']}, ${city['country']}'),
+                                padding: const EdgeInsets.all(8.0),
+                                itemCount: options.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  final Map<String, dynamic> city =
+                                      options.elementAt(index);
+                                  return GestureDetector(
+                                    onTap: () {
+                                      onSelected(city);
+                                    },
+                                    child: ListTile(
+                                      title: Text(
+                                        '${city['name']}, ${city['country']}',
+                                        style: TextStyle(
+                                          color: Colors
+                                              .black, // Explicit text color
+                                          fontSize: 14,
+                                        ),
                                       ),
-                                    );
-                                  }),
+                                      dense:
+                                          true, // Makes ListTile more compact
+                                      contentPadding:
+                                          EdgeInsets.symmetric(horizontal: 8.0),
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         );
@@ -98,7 +135,7 @@ class CitiesScreen extends StatelessWidget {
                       onSelected: (Map<String, dynamic> selection) async {
                         Navigator.pop(context);
                         print(selection.toString());
-                        
+
                         print("latitude is ${selection["lat"]}");
                         await Provider.of<AppProvider>(context, listen: false)
                             .addMyCities(jsonEncode(selection));
@@ -126,26 +163,11 @@ class CitiesScreen extends StatelessWidget {
             },
           );
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          "Cities",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+      appBar: const CustomAppBar(
+        title: "Cities",
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -153,7 +175,6 @@ class CitiesScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              
               ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
@@ -172,7 +193,7 @@ class CitiesScreen extends StatelessWidget {
                               .removeMyCities(index);
                           await Provider.of<AppProvider>(context, listen: false)
                               .getMyCitiesList();
-          
+
                           await Provider.of<AppProvider>(context, listen: false)
                               .setMyCityCities();
                         },

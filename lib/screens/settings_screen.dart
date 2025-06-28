@@ -2,6 +2,7 @@
 
 import 'package:adhan_dart/adhan_dart.dart';
 import 'package:al_qibla/provider/app_provider.dart';
+import 'package:al_qibla/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -43,28 +44,15 @@ class _SettingScreenState extends State<SettingScreen> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(245, 244, 255, 1.0),
-      appBar: AppBar(
-  backgroundColor: Colors.transparent,
-  elevation: 0,
-  leading: IconButton(
-    icon: Icon(Icons.arrow_back, color: Colors.black),
-    onPressed: () {
-      Navigator.pop(context); // Navigate back to the previous screen
-    },
-  ),
-  title: Text(
-    "Settings",
-    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-  ),
-  centerTitle: true, // Align the title to the left
-),
+      backgroundColor: const Color.fromRGBO(245, 244, 255, 1.0),
+      appBar: const CustomAppBar(
+        title: "Settings",
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              
               Padding(
                 padding: EdgeInsets.fromLTRB(20, 30, 0, 0),
                 child: Text(
@@ -115,7 +103,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                     .toList()[index];
                                 final value = Provider.of<AppProvider>(context)
                                     .calculationMethodRadioTileMap[key];
-          
+
                                 return RadioListTile<String>(
                                   title: Text(value!),
                                   value: key,
@@ -130,15 +118,14 @@ class _SettingScreenState extends State<SettingScreen> {
                                     });
 
                                     Navigator.pop(context); // Close the dialog
-                                    Provider.of<AppProvider>(context, listen: false)
+                                    Provider.of<AppProvider>(context,
+                                            listen: false)
                                         .getPrayerTimes(refresh: true);
-
                                   },
                                 );
                               },
                             ),
                           ),
-                          
                         );
                       });
                     },
@@ -160,8 +147,8 @@ class _SettingScreenState extends State<SettingScreen> {
                   ),
                 ),
                 subtitle: Text(
-                  Provider.of<AppProvider>(context)
-                      .madhabMap[Provider.of<AppProvider>(context).getMadhab()]!,
+                  Provider.of<AppProvider>(context).madhabMap[
+                      Provider.of<AppProvider>(context).getMadhab()]!,
                   style: TextStyle(color: Colors.grey[700]),
                 ),
                 trailing:
@@ -186,7 +173,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                     .toList()[index];
                                 final value = Provider.of<AppProvider>(context)
                                     .madhabMap[key];
-          
+
                                 return RadioListTile<String>(
                                   title: Text(value!),
                                   value: key,
@@ -197,14 +184,14 @@ class _SettingScreenState extends State<SettingScreen> {
                                             listen: false)
                                         .setMadhab(newValue!);
                                     Navigator.pop(context); // Close the dialog
-                                    Provider.of<AppProvider>(context, listen: false)
+                                    Provider.of<AppProvider>(context,
+                                            listen: false)
                                         .getPrayerTimes(refresh: true);
                                   },
                                 );
                               },
                             ),
                           ),
-                          
                         );
                       });
                     },
@@ -252,7 +239,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                     .toList()[index];
                                 final value = Provider.of<AppProvider>(context)
                                     .highLatitudeMap[key];
-          
+
                                 return RadioListTile<String>(
                                   title: Text(value!),
                                   value: key,
@@ -262,15 +249,15 @@ class _SettingScreenState extends State<SettingScreen> {
                                     Provider.of<AppProvider>(context,
                                             listen: false)
                                         .setHighLatitudeRule(newValue!);
-                                  Navigator.pop(context); // Close the dialog
-                                    Provider.of<AppProvider>(context, listen: false)
+                                    Navigator.pop(context); // Close the dialog
+                                    Provider.of<AppProvider>(context,
+                                            listen: false)
                                         .getPrayerTimes(refresh: true);
                                   },
                                 );
                               },
                             ),
                           ),
-                          
                         );
                       });
                     },
@@ -334,7 +321,6 @@ class _SettingScreenState extends State<SettingScreen> {
                   // Add any action you want when the ListTile is tapped
                 },
               ),
-          
               Padding(
                 padding: EdgeInsets.fromLTRB(20, 30, 0, 0),
                 child: Text(

@@ -19,16 +19,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     HomeWidget.setAppGroupId("group.com.jafar.alQiblaWidget");
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
 
     // Initialize prayer times
     Provider.of<AppProvider>(context, listen: false).initStateHomePage();
-    //Provider.of<AppProvider>(context, listen: false).getPrayerTimes(refresh: true);
+    //Provider.of<AppProvider>(context, listen: false).animateScrollController();
+    
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance?.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -64,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           children: [
             // Show basic UI elements
 
-            appProvider.nextPrayerTime != null ? topInfo() : const SizedBox(),
+            topInfo(),
             mosqueImage(),
             appProvider.currentSVG,
             // Conditionally show the prayer picker

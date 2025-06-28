@@ -1,5 +1,6 @@
 import 'package:al_qibla/provider/app_provider.dart';
 import 'package:al_qibla/widgets/missed_prayer_container.dart';
+import 'package:al_qibla/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,11 +11,8 @@ class MissedPrayerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0,
-        foregroundColor: Colors.black,
-        title: Text("Missed Prayers"),
-        backgroundColor: Colors.transparent,
+      appBar: const CustomAppBar(
+        title: "Missed Prayers",
       ),
       body: ListView(
         padding: EdgeInsets.fromLTRB(20, 30, 20, 20), // Added bottom padding
@@ -26,8 +24,7 @@ class MissedPrayerScreen extends StatelessWidget {
             Color2: Provider.of<AppProvider>(context).secondGrad[0],
             onClickAction: () async {
               Provider.of<AppProvider>(context, listen: false).setFajrMissed(
-                Provider.of<AppProvider>(context, listen: false)
-                        .fajrMissed() +
+                Provider.of<AppProvider>(context, listen: false).fajrMissed() +
                     1,
               );
             },
@@ -39,7 +36,7 @@ class MissedPrayerScreen extends StatelessWidget {
               );
             },
             onClickEdit: () {
-              _showInputDialog(context,0);
+              _showInputDialog(context, 0);
             },
           ),
           MissedContainer(
@@ -49,20 +46,18 @@ class MissedPrayerScreen extends StatelessWidget {
             Color2: Provider.of<AppProvider>(context).secondGrad[2],
             onClickAction: () {
               Provider.of<AppProvider>(context, listen: false).setDhuhrMissed(
-                Provider.of<AppProvider>(context, listen: false)
-                        .dhuhrMissed() +
+                Provider.of<AppProvider>(context, listen: false).dhuhrMissed() +
                     1,
               );
             },
             onClickMinus: () {
               Provider.of<AppProvider>(context, listen: false).setDhuhrMissed(
-                Provider.of<AppProvider>(context, listen: false)
-                        .dhuhrMissed() -
+                Provider.of<AppProvider>(context, listen: false).dhuhrMissed() -
                     1,
               );
             },
             onClickEdit: () {
-               _showInputDialog(context,1);
+              _showInputDialog(context, 1);
             },
           ),
           MissedContainer(
@@ -83,7 +78,7 @@ class MissedPrayerScreen extends StatelessWidget {
               );
             },
             onClickEdit: () {
-               _showInputDialog(context,2);
+              _showInputDialog(context, 2);
             },
           ),
           MissedContainer(
@@ -92,23 +87,21 @@ class MissedPrayerScreen extends StatelessWidget {
             Color1: Provider.of<AppProvider>(context).firstGrad[4],
             Color2: Provider.of<AppProvider>(context).secondGrad[4],
             onClickAction: () {
-              Provider.of<AppProvider>(context, listen: false)
-                  .setMaghribMissed(
+              Provider.of<AppProvider>(context, listen: false).setMaghribMissed(
                 Provider.of<AppProvider>(context, listen: false)
                         .maghribMissed() +
                     1,
               );
             },
             onClickMinus: () {
-              Provider.of<AppProvider>(context, listen: false)
-                  .setMaghribMissed(
+              Provider.of<AppProvider>(context, listen: false).setMaghribMissed(
                 Provider.of<AppProvider>(context, listen: false)
                         .maghribMissed() -
                     1,
               );
             },
             onClickEdit: () {
-               _showInputDialog(context,3);
+              _showInputDialog(context, 3);
             },
           ),
           MissedContainer(
@@ -118,20 +111,18 @@ class MissedPrayerScreen extends StatelessWidget {
             Color2: Provider.of<AppProvider>(context).secondGrad[5],
             onClickAction: () {
               Provider.of<AppProvider>(context, listen: false).setIshaMissed(
-                Provider.of<AppProvider>(context, listen: false)
-                        .ishaMissed() +
+                Provider.of<AppProvider>(context, listen: false).ishaMissed() +
                     1,
               );
             },
             onClickMinus: () {
               Provider.of<AppProvider>(context, listen: false).setIshaMissed(
-                Provider.of<AppProvider>(context, listen: false)
-                        .ishaMissed() -
+                Provider.of<AppProvider>(context, listen: false).ishaMissed() -
                     1,
               );
             },
             onClickEdit: () {
-               _showInputDialog(context,4);
+              _showInputDialog(context, 4);
             },
           ),
         ],
@@ -175,7 +166,6 @@ Future<void> _showInputDialog(BuildContext context, int prayerInt) async {
           },
           style: TextStyle(color: Colors.black),
         ),
-        
         actions: <Widget>[
           TextButton(
             child: Text('Cancel'),
@@ -187,7 +177,8 @@ Future<void> _showInputDialog(BuildContext context, int prayerInt) async {
             child: Text('Set'),
             onPressed: () {
               // Use the updated value or the default value if unchanged
-              inputValue = inputValue.isEmpty ? defaultValue.toString() : inputValue;
+              inputValue =
+                  inputValue.isEmpty ? defaultValue.toString() : inputValue;
 
               // Handle the 'Set' button click
               if (prayerInt == 0) {
