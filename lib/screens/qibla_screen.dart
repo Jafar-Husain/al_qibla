@@ -3,6 +3,7 @@ import 'package:al_qibla/provider/app_provider.dart';
 import 'package:al_qibla/widgets/compass_view.dart';
 import 'package:al_qibla/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
@@ -44,75 +45,82 @@ class _QiblaScreenState extends State<QiblaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<CompassEvent>(
-      stream: FlutterCompass.events,
-      builder: (context, snapshot) {
-        final heading = snapshot.data?.heading ?? 0;
-        final accuracy = snapshot.data?.accuracy;
-        String accuracyStatus = '';
-        Color accuracyColor = Colors.white; // Default color
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light, // White icons/text
+        statusBarBrightness: Brightness.dark, // For iOS
+      ),
+      child: StreamBuilder<CompassEvent>(
+        stream: FlutterCompass.events,
+        builder: (context, snapshot) {
+          final heading = snapshot.data?.heading ?? 0;
+          final accuracy = snapshot.data?.accuracy;
+          String accuracyStatus = '';
+          Color accuracyColor = Colors.white; // Default color
 
-        if (accuracy != null) {
-          if (accuracy <= 5) {
-            accuracyStatus = 'Excellent';
-            accuracyColor = Colors.green;
-          } else if (accuracy > 5 && accuracy <= 15) {
-            accuracyStatus = 'Medium';
-            accuracyColor = Colors.yellow;
+          if (accuracy != null) {
+            if (accuracy <= 5) {
+              accuracyStatus = 'Excellent';
+              accuracyColor = Colors.green;
+            } else if (accuracy > 5 && accuracy <= 15) {
+              accuracyStatus = 'Medium';
+              accuracyColor = Colors.yellow;
+            } else {
+              accuracyStatus = 'Bad';
+              accuracyColor = Colors.red;
+            }
           } else {
-            accuracyStatus = 'Bad';
-            accuracyColor = Colors.red;
+            accuracyStatus = 'N/A';
           }
-        } else {
-          accuracyStatus = 'N/A';
-        }
 
-        return Scaffold(
-          appBar: const CustomAppBar(
-            title: "Compass",
+          return Scaffold(
+            appBar: const CustomAppBar(
+              title: "Compass",
+              backgroundColor: Colors.black,
+              foregroundColor: Colors.white,
+            ),
             backgroundColor: Colors.black,
-            foregroundColor: Colors.white,
-          ),
-          backgroundColor: Colors.black,
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "${heading.ceil() > 0 ? heading.ceil() : 360 + heading.ceil()}°",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30),
-              ),
-              SizedBox(
-                height: 40,
-              ),
-              Align(
-                alignment: const Alignment(0, -0.2),
-                child: CompassView(
-                  bearing: _bearing,
-                  heading: heading,
+            body: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "${heading.ceil() > 0 ? heading.ceil() : 360 + heading.ceil()}°",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 30),
                 ),
-              ),
-              SizedBox(
-                height: 50,
-              ),
-              Text(
-                "Qibla is ${_bearing!.ceil()}°",
-                style: TextStyle(color: Colors.white),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Text(
-                "Accuracy is $accuracyStatus",
-                style: TextStyle(color: accuracyColor),
-              ),
-            ],
-          ),
-        );
-      },
+                SizedBox(
+                  height: 40,
+                ),
+                Align(
+                  alignment: const Alignment(0, -0.2),
+                  child: CompassView(
+                    bearing: _bearing,
+                    heading: heading,
+                  ),
+                ),
+                SizedBox(
+                  height: 50,
+                ),
+                Text(
+                  "Qibla is ${_bearing!.ceil()}°",
+                  style: TextStyle(color: Colors.white),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  "Accuracy is $accuracyStatus",
+                  style: TextStyle(color: accuracyColor),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

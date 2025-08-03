@@ -29,7 +29,7 @@ void main() async {
   HomeWidget.setAppGroupId("group.com.jafar.alQiblaWidget");
   // Initialize notifications
   await NotificationApi.init(initScheduled: true);
-  
+
   Workmanager().initialize(
     callbackDispatcher, // The top level function, aka callbackDispatcher
     isInDebugMode: false,
@@ -38,8 +38,6 @@ void main() async {
 
   Workmanager().registerOneOffTask("task-identifier", "simpleTask",
       initialDelay: Duration(seconds: 10));
-
-  
 
   runApp(const MainApp());
 }
@@ -52,6 +50,7 @@ class MainApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
+
     return ChangeNotifierProvider(
       create: (context) => AppProvider(),
       child: MaterialApp(
@@ -61,10 +60,11 @@ class MainApp extends StatelessWidget {
           dialogBackgroundColor: Colors.white,
           dialogTheme: const DialogTheme(
             backgroundColor: Colors.white,
-            titleTextStyle: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+            titleTextStyle: TextStyle(
+                color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
             contentTextStyle: TextStyle(color: Colors.black),
           ),
-          
+
           // Define separate input decoration theme for text fields in dialogs
           inputDecorationTheme: InputDecorationTheme(
             labelStyle: TextStyle(color: Colors.black87),
@@ -73,14 +73,14 @@ class MainApp extends StatelessWidget {
             filled: true,
             fillColor: Colors.white,
           ),
-          
+
           // Override text selection color for TextField
           textSelectionTheme: TextSelectionThemeData(
             cursorColor: Colors.blue,
             selectionColor: Colors.blue.withOpacity(0.3),
             selectionHandleColor: Colors.blue,
           ),
-          
+
           // Define your custom theme here for app UI (not dialogs)
           textTheme: const TextTheme(
             // These styles will apply to app text but not dialog text
@@ -88,17 +88,17 @@ class MainApp extends StatelessWidget {
             bodyMedium: TextStyle(color: Colors.white),
             bodySmall: TextStyle(color: Colors.white),
           ),
-          
+
           // We need to explicitly set TextField style
           textButtonTheme: TextButtonThemeData(
             style: TextButton.styleFrom(
               foregroundColor: Colors.blue, // Button text color
             ),
           ),
-          
+
           iconTheme: const IconThemeData(color: Colors.white),
         ),
-        
+
         // This is important - it overrides TextField theme specifically
         // to ensure dialog text fields show black text
         builder: (context, child) {
@@ -106,14 +106,14 @@ class MainApp extends StatelessWidget {
             data: Theme.of(context).copyWith(
               // Ensure TextField uses black text regardless of parent theme
               textTheme: Theme.of(context).textTheme.copyWith(
-                // This specifically targets TextField input
-                titleMedium: TextStyle(color: Colors.black),
-              ),
+                    // This specifically targets TextField input
+                    titleMedium: TextStyle(color: Colors.black),
+                  ),
             ),
             child: child!,
           );
         },
-        
+
         routes: {
           '/homeScreen  ': (context) => const HomeScreen(),
           '/settingScreen': (context) => const SettingScreen(),

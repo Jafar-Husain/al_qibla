@@ -4,6 +4,7 @@ import 'package:adhan_dart/adhan_dart.dart';
 import 'package:al_qibla/provider/app_provider.dart';
 import 'package:al_qibla/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/src/foundation/diagnostics.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -77,7 +78,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Widget build(BuildContext context) {
     var calFormat = CalendarFormat.month;
 
-    double fontSize = 15;
     DateFormat customDateFormat =
         Provider.of<AppProvider>(context).getTimeFormat24()
             ? DateFormat('HH:mm')
@@ -91,119 +91,124 @@ class _CalendarScreenState extends State<CalendarScreen> {
       "Isha"
     ];
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
-        title: "Calendar",
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark.copyWith(
+        statusBarColor: Colors.transparent,
       ),
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            TableCalendar(
-              calendarStyle: CalendarStyle(
-                defaultTextStyle: TextStyle(color: Colors.black),
-                outsideTextStyle: TextStyle(color: Colors.black),
-              ),
-              headerVisible: true,
-              headerStyle: HeaderStyle(
-                leftChevronIcon: Icon(
-                  Icons.chevron_left,
-                  color: Colors.black,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: const CustomAppBar(
+          title: "Calendar",
+        ),
+        body: SafeArea(
+          bottom: false,
+          child: Column(
+            children: [
+              TableCalendar(
+                calendarStyle: CalendarStyle(
+                  defaultTextStyle: TextStyle(color: Colors.black),
+                  outsideTextStyle: TextStyle(color: Colors.black),
                 ),
-                rightChevronIcon: Icon(
-                  Icons.chevron_right,
-                  color: Colors.black,
-                ),
-                titleTextStyle: TextStyle(
+                headerVisible: true,
+                headerStyle: HeaderStyle(
+                  leftChevronIcon: Icon(
+                    Icons.chevron_left,
                     color: Colors.black,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700),
-                formatButtonVisible:
-                    false, // Set to true if you want format buttons
-              ),
-              focusedDay: slcDay,
-              selectedDayPredicate: (day) {
-                return isSameDay(slcDay, day);
-              },
-              onDaySelected: (selectedDay, focusedDay) {
-                setState(() {
-                  slcDay = selectedDay;
-                  initializePrayerList();
-                });
-              },
-              firstDay: slcDay.add(Duration(days: -365)),
-              lastDay: slcDay.add(
-                Duration(days: 365),
-              ),
-              calendarFormat: calFormat,
-              onFormatChanged: (format) {},
-            ),
-            SizedBox(
-              height: 50,
-            ),
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 5,
-                      blurRadius: 7,
-                      offset: Offset(0, 3), // changes position of shadow
-                    ),
-                  ],
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
                   ),
+                  rightChevronIcon: Icon(
+                    Icons.chevron_right,
+                    color: Colors.black,
+                  ),
+                  titleTextStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700),
+                  formatButtonVisible:
+                      false, // Set to true if you want format buttons
                 ),
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        DateFormat('EEEE, d MMMM yyyy').format(slcDay),
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.w800),
+                focusedDay: slcDay,
+                selectedDayPredicate: (day) {
+                  return isSameDay(slcDay, day);
+                },
+                onDaySelected: (selectedDay, focusedDay) {
+                  setState(() {
+                    slcDay = selectedDay;
+                    initializePrayerList();
+                  });
+                },
+                firstDay: slcDay.add(Duration(days: -365)),
+                lastDay: slcDay.add(
+                  Duration(days: 365),
+                ),
+                calendarFormat: calFormat,
+                onFormatChanged: (format) {},
+              ),
+              SizedBox(
+                height: 50,
+              ),
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: Offset(0, 3), // changes position of shadow
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      for (int i = 0; i < prayerNames.length; i++)
-                        Expanded(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text(
-                                prayerNames[i],
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                customDateFormat.format(prayersList[i]),
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                     ],
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(10, 30, 10, 30),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          DateFormat('EEEE, d MMMM yyyy').format(slcDay),
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.w800),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        for (int i = 0; i < prayerNames.length; i++)
+                          Expanded(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text(
+                                  prayerNames[i],
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  customDateFormat.format(prayersList[i]),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );

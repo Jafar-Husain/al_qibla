@@ -1,6 +1,7 @@
 import 'package:al_qibla/provider/app_provider.dart';
 import 'package:al_qibla/widgets/home_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:provider/provider.dart';
 import '../widgets/mosque_image.dart';
@@ -24,7 +25,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // Initialize prayer times
     Provider.of<AppProvider>(context, listen: false).initStateHomePage();
     //Provider.of<AppProvider>(context, listen: false).animateScrollController();
-    
   }
 
   @override
@@ -46,38 +46,45 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final appProvider = Provider.of<AppProvider>(context);
 
-    return Scaffold(
-      drawer: HomeDrawer(),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              appProvider.currentFirstGrad,
-              appProvider.currentSecondGrad,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light, // White icons/text
+        statusBarBrightness: Brightness.dark, // For iOS
+      ),
+      child: Scaffold(
+        drawer: HomeDrawer(),
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                appProvider.currentFirstGrad,
+                appProvider.currentSecondGrad,
+              ],
+            ),
+          ),
+          child: Stack(
+            children: [
+              // Show basic UI elements
+
+              topInfo(),
+              mosqueImage(),
+              appProvider.currentSVG,
+              // Conditionally show the prayer picker
+              appProvider.prayerTimesList.isNotEmpty
+                  ? prayerPicker()
+                  : const Center(
+                      child: Text(
+                        "Loading prayer times...",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
             ],
           ),
-        ),
-        child: Stack(
-          children: [
-            // Show basic UI elements
-
-            topInfo(),
-            mosqueImage(),
-            appProvider.currentSVG,
-            // Conditionally show the prayer picker
-            appProvider.prayerTimesList.isNotEmpty
-                ? prayerPicker()
-                : const Center(
-                    child: Text(
-                      "Loading prayer times...",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-          ],
         ),
       ),
     );
