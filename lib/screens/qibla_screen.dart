@@ -3,9 +3,9 @@ import 'package:al_qibla/provider/app_provider.dart';
 import 'package:al_qibla/widgets/compass_view.dart';
 import 'package:al_qibla/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:al_qibla/app_theme.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_compass/flutter_compass.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:al_qibla/widgets/navbar.dart';
 
@@ -30,12 +30,6 @@ class _QiblaScreenState extends State<QiblaScreen> {
     });
   }
 
-  void _setBearing(double heading) {
-    setState(() {
-      _bearing = heading;
-    });
-  }
-
   @override
   void initState() {
     // TODO: implement initState
@@ -55,87 +49,86 @@ class _QiblaScreenState extends State<QiblaScreen> {
       child: StreamBuilder<CompassEvent>(
         stream: FlutterCompass.events,
         builder: (context, snapshot) {
+          final isDarkMode = Theme.of(context).brightness == Brightness.dark;
           final heading = snapshot.data?.heading ?? 0;
           final accuracy = snapshot.data?.accuracy;
           String accuracyStatus = '';
-          Color accuracyColor = Colors.white; // Default color
+          Color accuracyColor = isDarkMode
+              ? Colors.white
+              : AppTheme.primaryColor; // Default base color
 
           if (accuracy != null) {
             if (accuracy <= 5) {
               accuracyStatus = 'Excellent';
-              accuracyColor = Colors.green;
+              accuracyColor =
+                  isDarkMode ? Colors.greenAccent : Colors.green[700]!;
             } else if (accuracy > 5 && accuracy <= 15) {
               accuracyStatus = 'Medium';
-              accuracyColor = Colors.yellow;
+              accuracyColor =
+                  isDarkMode ? Colors.amberAccent : Colors.orange[800]!;
             } else {
               accuracyStatus = 'Bad';
-              accuracyColor = Colors.red;
+              accuracyColor = isDarkMode ? Colors.redAccent : Colors.red[700]!;
             }
           } else {
             accuracyStatus = 'N/A';
           }
 
           return Scaffold(
-            appBar: const CustomAppBar(
+            appBar: CustomAppBar(
               title: "Compass",
-              backgroundColor: Colors.black,
-              foregroundColor: Colors.white,
+              backgroundColor: Colors.transparent,
+              foregroundColor:
+                  isDarkMode ? Colors.white : AppTheme.primaryColor,
             ),
-            backgroundColor: Colors.black,
-            body: Stack(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "${heading.ceil() > 0 ? heading.ceil() : 360 + heading.ceil()}°",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 30),
-                    ),
-                    SizedBox(
-                      height: 40,
-                    ),
-                    Align(
-                      alignment: const Alignment(0, -0.2),
-                      child: CompassView(
-                        bearing: _bearing,
-                        heading: heading,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 50,
-                    ),
-                    Text(
-                      "Qibla is ${_bearing!.ceil()}°",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      "Accuracy is $accuracyStatus",
-                      style: TextStyle(color: accuracyColor),
-                      // Reserve space for nav bar
-                    ),
-                    const SizedBox(height: 100),
-                  ],
-                ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: SafeArea(
-                    top: false,
-                    child: const Padding(
-                      padding: EdgeInsets.all(16),
-                      child: BottomNavigationWidget(selectedIndex: 0),
+            backgroundColor: AppTheme.getCurrentBackgroundColor(isDarkMode),
+            body: SafeArea(
+              bottom: false,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "${heading.ceil() > 0 ? heading.ceil() : 360 + heading.ceil()}°",
+                    style: TextStyle(
+                        color:
+                            isDarkMode ? Colors.white : AppTheme.primaryColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30),
+                  ),
+                  const SizedBox(height: 40),
+                  Align(
+                    alignment: const Alignment(0, -0.2),
+                    child: CompassView(
+                      bearing: _bearing,
+                      heading: heading,
+                      foregroundColor:
+                          isDarkMode ? Colors.white : AppTheme.primaryColor,
+                      bearingColor:
+                          isDarkMode ? AppTheme.accentColor : Colors.redAccent,
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 50),
+                  Text(
+                    "Qibla is ${_bearing!.ceil()}°",
+                    style: TextStyle(
+                        color:
+                            isDarkMode ? Colors.white : AppTheme.primaryColor),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    "Accuracy is $accuracyStatus",
+                    style: TextStyle(color: accuracyColor),
+                  ),
+                ],
+              ),
+            ),
+            bottomNavigationBar: const SafeArea(
+              top: false,
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: BottomNavigationWidget(selectedIndex: 0),
+              ),
             ),
           );
         },

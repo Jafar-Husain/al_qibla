@@ -3,6 +3,7 @@
 import 'package:adhan_dart/adhan_dart.dart';
 import 'package:al_qibla/provider/app_provider.dart';
 import 'package:al_qibla/widgets/custom_app_bar.dart';
+import 'package:al_qibla/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +19,6 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
-  @override
   late String selectedMehthod;
 
   void setSelectedMethod() async {
@@ -50,9 +50,14 @@ class _SettingScreenState extends State<SettingScreen> {
         statusBarColor: Colors.transparent,
       ),
       child: Scaffold(
-        backgroundColor: const Color.fromRGBO(245, 244, 255, 1.0),
-        appBar: const CustomAppBar(
+        backgroundColor: AppTheme.getCurrentBackgroundColor(
+            Theme.of(context).brightness == Brightness.dark),
+        appBar: CustomAppBar(
           title: "Settings",
+          backgroundColor: Colors.transparent,
+          foregroundColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white
+              : AppTheme.primaryColor,
         ),
         body: SafeArea(
           bottom: false,
@@ -74,7 +79,9 @@ class _SettingScreenState extends State<SettingScreen> {
                   height: 20,
                 ),
                 ListTile(
-                  tileColor: Colors.white,
+                  tileColor: Theme.of(context).brightness == Brightness.dark
+                      ? AppTheme.darkBigContainer
+                      : AppTheme.smallContainer,
                   // Background color
                   title: Text(
                     'Calculation Method',
@@ -122,7 +129,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                           .setMethod(newValue!);
 
                                       setState(() {
-                                        selectedMehthod = newValue!;
+                                        selectedMehthod = newValue;
                                       });
 
                                       Navigator.pop(
@@ -148,7 +155,9 @@ class _SettingScreenState extends State<SettingScreen> {
                   endIndent: 20,
                 ),
                 ListTile(
-                  tileColor: Colors.white, // Background color
+                  tileColor: Theme.of(context).brightness == Brightness.dark
+                      ? AppTheme.darkBigContainer
+                      : AppTheme.smallContainer, // Background color
                   title: Text(
                     'Asr Juristic Method',
                     style: TextStyle(
@@ -217,7 +226,9 @@ class _SettingScreenState extends State<SettingScreen> {
                   endIndent: 20,
                 ),
                 ListTile(
-                  tileColor: Colors.white, // Background color
+                  tileColor: Theme.of(context).brightness == Brightness.dark
+                      ? AppTheme.darkBigContainer
+                      : AppTheme.smallContainer, // Background color
                   title: Text(
                     'Higher Latitude Adjustment',
                     style: TextStyle(
@@ -294,7 +305,9 @@ class _SettingScreenState extends State<SettingScreen> {
                   height: 20,
                 ),
                 ListTile(
-                  tileColor: Colors.white, // Background color
+                  tileColor: Theme.of(context).brightness == Brightness.dark
+                      ? AppTheme.darkBigContainer
+                      : AppTheme.smallContainer, // Background color
                   title: Text(
                     '24 Hour Format',
                     style: TextStyle(
@@ -324,7 +337,9 @@ class _SettingScreenState extends State<SettingScreen> {
                   endIndent: 20,
                 ),
                 ListTile(
-                  tileColor: Colors.white, // Background color
+                  tileColor: Theme.of(context).brightness == Brightness.dark
+                      ? AppTheme.darkBigContainer
+                      : AppTheme.smallContainer, // Background color
                   title: Text(
                     'Notifications',
                     style: TextStyle(

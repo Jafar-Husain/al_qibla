@@ -6,7 +6,7 @@ class CompassView extends StatefulWidget {
     Key? key,
     required this.bearing,
     required this.heading,
-    this.foregroundColor = Colors.white,
+    this.foregroundColor = Colors.black,
     this.bearingColor = Colors.red,
   }) : super(key: key);
 

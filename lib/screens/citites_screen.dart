@@ -7,6 +7,7 @@ import 'package:al_qibla/class/sting_extension.dart';
 import 'package:al_qibla/provider/app_provider.dart';
 import 'package:al_qibla/screens/calendar_screen.dart';
 import 'package:al_qibla/widgets/custom_app_bar.dart';
+import 'package:al_qibla/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -175,9 +176,14 @@ class CitiesScreen extends StatelessWidget {
             },
             child: const Icon(Icons.add),
           ),
-          backgroundColor: Colors.white,
-          appBar: const CustomAppBar(
+          backgroundColor: AppTheme.getCurrentBackgroundColor(
+              Theme.of(context).brightness == Brightness.dark),
+          appBar: CustomAppBar(
             title: "Cities",
+            backgroundColor: Colors.transparent,
+            foregroundColor: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : AppTheme.primaryColor,
           ),
           body: SafeArea(
             bottom: false,
