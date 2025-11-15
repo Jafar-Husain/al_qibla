@@ -86,15 +86,11 @@ class _NewHomeScreenState extends State<NewHomeScreen>
 
     const double tileHeight = 108;
     if (times.isEmpty) {
-      return Column(
-        children: const [
-          SizedBox(height: 40),
-          Center(child: CircularProgressIndicator()),
-          SizedBox(height: 100),
-        ],
-      );
+      return const Center(child: CircularProgressIndicator());
     }
-    return Column(
+    // Only the list scrolls
+    return ListView(
+      padding: const EdgeInsets.only(bottom: 100),
       children: [
         SizedBox(
           height: tileHeight,
@@ -144,8 +140,6 @@ class _NewHomeScreenState extends State<NewHomeScreen>
             isCurrentPrayer: isNext('isha'),
           ),
         ),
-        // Reserve space for nav bar
-        const SizedBox(height: 100),
       ],
     );
   }
@@ -212,31 +206,32 @@ class _NewHomeScreenState extends State<NewHomeScreen>
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(top: 5),
-                        child: SingleChildScrollView(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              if (_selectedTab == HomeMenuTab.prayerTimes) ...[
-                                HomeTopInfo(isDarkMode: isDarkMode),
-                                const SizedBox(height: 10),
-                              ],
-                              HomeMenuButtonRow(
-                                isDarkMode: isDarkMode,
-                                selectedTab: _selectedTab,
-                                onTabSelected: (HomeMenuTab tab) {
-                                  setState(() {
-                                    _selectedTab = tab;
-                                  });
-                                },
-                              ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            if (_selectedTab == HomeMenuTab.prayerTimes) ...[
+                              HomeTopInfo(isDarkMode: isDarkMode),
                               const SizedBox(height: 10),
-                              _buildTabContent(
+                            ],
+                            HomeMenuButtonRow(
+                              isDarkMode: isDarkMode,
+                              selectedTab: _selectedTab,
+                              onTabSelected: (HomeMenuTab tab) {
+                                setState(() {
+                                  _selectedTab = tab;
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            // Only content area scrolls when needed
+                            Expanded(
+                              child: _buildTabContent(
                                 appProvider,
                                 isDarkMode,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
