@@ -3,7 +3,7 @@ import 'package:home_widget/home_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/data/latest.dart' as tzdata;
 
 final Map<String, CalculationParameters> calculationMethodsMap = {
   'MuslimWorldLeague': CalculationMethodParameters.muslimWorldLeague(),
@@ -57,8 +57,10 @@ Future<PrayerTimes> calculatePrayerTimes(
   CalculationParameters params = method;
   params.madhab = _stringToMadhab(madhab);
   params.highLatitudeRule = _stringToHighLatitudeRule(highLatitudeRule);
+  final nowUtc = date.toUtc();
+  final targetDateUtc = DateTime.utc(nowUtc.year, nowUtc.month, nowUtc.day);
   PrayerTimes prayerTimes = PrayerTimes(
-    date: date,
+    date: targetDateUtc,
     coordinates: coordinates,
     calculationParameters: params,
   );
@@ -68,11 +70,13 @@ Future<PrayerTimes> calculatePrayerTimes(
 Future<List> setNextPrayerNameFromPrayerTimes(
   PrayerTimes prayerTimes,
 ) async {
-  tz.initializeTimeZones();
+  tzdata.initializeTimeZones();
   final timezone = tz.local;
-  Prayer next = prayerTimes.nextPrayer();
+  final now = tz.TZDateTime.now(timezone);
+  Prayer next = prayerTimes.nextPrayer(date: now);
 
-  return [next.name, tz.TZDateTime.from(prayerTimes.timeForPrayer(next)!, timezone)];
+  final nextTimeLocal = prayerTimes.timeForPrayer(next).toLocal();
+  return [next.name, tz.TZDateTime.from(nextTimeLocal, timezone)];
 }
 
 Future<bool?> updateWidget() async {

@@ -19,11 +19,11 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
-  late String selectedMehthod;
+  String? selectedMehthod;
 
   void setSelectedMethod() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String method = prefs.getString("method")!;
+    String method = prefs.getString("method") ?? "Tehran";
     print(method);
 
     setState(() {
@@ -91,7 +91,8 @@ class _SettingScreenState extends State<SettingScreen> {
                   ),
                   subtitle: Text(
                     Provider.of<AppProvider>(context)
-                        .calculationMethodRadioTileMap[selectedMehthod]!,
+                            .calculationMethodRadioTileMap[
+                        selectedMehthod ?? "Tehran"]!,
                     style: TextStyle(color: Colors.grey[700]),
                   ),
                   trailing: Icon(
