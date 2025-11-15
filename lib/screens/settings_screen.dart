@@ -304,20 +304,100 @@ class _SettingScreenState extends State<SettingScreen> {
                     ),
                     isDarkMode: isDarkMode,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 32),
+                  SectionTitle(
+                    title: "Notifications",
+                    isDarkMode: isDarkMode,
+                  ),
+                  const SizedBox(height: 16),
                   SettingContainer(
-                    title: 'Notifications',
-                    subtitle: 'Open Settings',
-                    trailing: Icon(
-                      Icons.arrow_forward_ios,
-                      color: isDarkMode ? Colors.white70 : Colors.black54,
-                      size: 20,
+                    title: 'Fajr',
+                    subtitle: Provider.of<AppProvider>(context)
+                            .isPrayerNotificationEnabled('Fajr')
+                        ? 'Enabled'
+                        : 'Disabled',
+                    trailing: ToggleSwitch(
+                      value: Provider.of<AppProvider>(context)
+                          .isPrayerNotificationEnabled('Fajr'),
+                      onChanged: (value) {
+                        Provider.of<AppProvider>(context, listen: false)
+                            .togglePrayerNotification('Fajr', value);
+                      },
+                      isDarkMode: isDarkMode,
                     ),
                     isDarkMode: isDarkMode,
-                    onTap: () {
-                      AppSettings.openAppSettings(
-                          type: AppSettingsType.notification);
-                    },
+                  ),
+                  const SizedBox(height: 12),
+                  SettingContainer(
+                    title: 'Dhuhr',
+                    subtitle: Provider.of<AppProvider>(context)
+                            .isPrayerNotificationEnabled('Dhuhr')
+                        ? 'Enabled'
+                        : 'Disabled',
+                    trailing: ToggleSwitch(
+                      value: Provider.of<AppProvider>(context)
+                          .isPrayerNotificationEnabled('Dhuhr'),
+                      onChanged: (value) {
+                        Provider.of<AppProvider>(context, listen: false)
+                            .togglePrayerNotification('Dhuhr', value);
+                      },
+                      isDarkMode: isDarkMode,
+                    ),
+                    isDarkMode: isDarkMode,
+                  ),
+                  const SizedBox(height: 12),
+                  SettingContainer(
+                    title: 'Asr',
+                    subtitle: Provider.of<AppProvider>(context)
+                            .isPrayerNotificationEnabled('Asr')
+                        ? 'Enabled'
+                        : 'Disabled',
+                    trailing: ToggleSwitch(
+                      value: Provider.of<AppProvider>(context)
+                          .isPrayerNotificationEnabled('Asr'),
+                      onChanged: (value) {
+                        Provider.of<AppProvider>(context, listen: false)
+                            .togglePrayerNotification('Asr', value);
+                      },
+                      isDarkMode: isDarkMode,
+                    ),
+                    isDarkMode: isDarkMode,
+                  ),
+                  const SizedBox(height: 12),
+                  SettingContainer(
+                    title: 'Maghrib',
+                    subtitle: Provider.of<AppProvider>(context)
+                            .isPrayerNotificationEnabled('Maghrib')
+                        ? 'Enabled'
+                        : 'Disabled',
+                    trailing: ToggleSwitch(
+                      value: Provider.of<AppProvider>(context)
+                          .isPrayerNotificationEnabled('Maghrib'),
+                      onChanged: (value) {
+                        Provider.of<AppProvider>(context, listen: false)
+                            .togglePrayerNotification('Maghrib', value);
+                      },
+                      isDarkMode: isDarkMode,
+                    ),
+                    isDarkMode: isDarkMode,
+                  ),
+                  const SizedBox(height: 12),
+                  SettingContainer(
+                    title: 'Isha',
+                    subtitle: Provider.of<AppProvider>(context)
+                            .isPrayerNotificationEnabled('Isha')
+                        ? 'Enabled'
+                        : 'Disabled',
+                    trailing: ToggleSwitch(
+                      value: Provider.of<AppProvider>(context)
+                          .isPrayerNotificationEnabled('Isha'),
+                      onChanged: (value) {
+                        Provider.of<AppProvider>(context, listen: false)
+                            .togglePrayerNotification('Isha', value);
+                      },
+                      isDarkMode: isDarkMode,
+                    ),
+                    isDarkMode: isDarkMode,
                   ),
                   const SizedBox(height: 32),
                   SectionTitle(

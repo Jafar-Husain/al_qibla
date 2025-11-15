@@ -40,8 +40,15 @@ class _CitiesScreenState extends State<CitiesScreen> {
     });
 
     final app = Provider.of<AppProvider>(context, listen: false);
-    await app.getMyCitiesList();
-    await app.setMyCityCities();
+
+    // Run both the loading and a minimum delay in parallel
+    await Future.wait([
+      Future.delayed(Duration(milliseconds: 500)), // Minimum loading time
+      Future(() async {
+        await app.getMyCitiesList();
+        await app.setMyCityCities();
+      }),
+    ]);
 
     if (mounted) {
       setState(() {
@@ -370,7 +377,7 @@ class CityExpansionTile extends StatelessWidget {
               Icon(
                 Icons.mosque,
                 size: 20,
-                color: Colors.blue,
+                color: isDarkMode ? AppTheme.darkPrimaryColor : AppTheme.primaryColor,
               ),
               SizedBox(
                 width: 15,
@@ -382,7 +389,7 @@ class CityExpansionTile extends StatelessWidget {
               SizedBox(
                 width: 15,
               ),
-              Text(nextPrayerName == "fajrafter"
+              Text(nextPrayerName.toLowerCase() == "fajrafter"
                   ? "Fajr tomorrow"
                   : nextPrayerName.capitalize()),
               Spacer(),
