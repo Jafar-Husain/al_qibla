@@ -126,7 +126,7 @@ class _HomeTopInfoState extends State<HomeTopInfo> {
               ),
               const SizedBox(height: 0),
               Text(
-                _formatDate(),
+                '${_formatDate()} - ${appProvider.getCityName()}',
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
                       color: widget.isDarkMode
                           ? Colors.white70

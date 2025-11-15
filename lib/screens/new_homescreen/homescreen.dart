@@ -598,7 +598,7 @@ class _NewHomeScreenState extends State<NewHomeScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            DateFormat('EEE, MMM d, yyyy').format(_selectedDay),
+            DateFormat('EEE MMM d yyyy').format(_selectedDay),
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
