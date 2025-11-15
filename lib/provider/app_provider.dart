@@ -71,7 +71,8 @@ class AppProvider extends ChangeNotifier {
     'Karachi': CalculationMethodParameters.karachi(),
     'UmmAlQura': CalculationMethodParameters.ummAlQura(),
     'Dubai': CalculationMethodParameters.dubai(),
-    'MoonsightingCommittee': CalculationMethodParameters.moonsightingCommittee(),
+    'MoonsightingCommittee':
+        CalculationMethodParameters.moonsightingCommittee(),
     'NorthAmerica': CalculationMethodParameters.northAmerica(),
     'Kuwait': CalculationMethodParameters.kuwait(),
     'Qatar': CalculationMethodParameters.qatar(),
@@ -500,12 +501,14 @@ class AppProvider extends ChangeNotifier {
     params.madhab = _stringToMadhab(madhab);
     params.highLatitudeRule = _stringToHighLatitudeRule(highLatitudeRule);
 
-    // Use UTC to avoid DST issues - convert input date to UTC
-    final dateUtc = date.toUtc();
-    final targetDateUtc = DateTime.utc(dateUtc.year, dateUtc.month, dateUtc.day);
+    // Use UTC to avoid DST issues
+    final nowUtc = date.toUtc();
+    final targetDateUtc = DateTime.utc(nowUtc.year, nowUtc.month, nowUtc.day);
 
     PrayerTimes prayerTimes = PrayerTimes(
-        date: targetDateUtc, coordinates: coordinates, calculationParameters: params);
+        date: targetDateUtc,
+        coordinates: coordinates,
+        calculationParameters: params);
     return prayerTimes;
   }
 
@@ -526,10 +529,12 @@ class AppProvider extends ChangeNotifier {
   Future<String> getTimeDifference(double latitude, double longitude) async {
     // Get device's timezone location using lat/lng
     tz.initializeTimeZones();
-    String deviceTimezoneString = tzmap.latLngToTimezoneString(_latitude, _longitude);
+    String deviceTimezoneString =
+        tzmap.latLngToTimezoneString(_latitude, _longitude);
     final deviceTimeZone = tz.getLocation(deviceTimezoneString);
 
-    String cityTimezoneString = tzmap.latLngToTimezoneString(latitude, longitude);
+    String cityTimezoneString =
+        tzmap.latLngToTimezoneString(latitude, longitude);
     final cityTimeZone = tz.getLocation(cityTimezoneString);
 
     DateTime deviceTime = tz.TZDateTime.now(deviceTimeZone);
@@ -569,7 +574,7 @@ class AppProvider extends ChangeNotifier {
     tz.initializeTimeZones();
     String ti = tzmap.latLngToTimezoneString(latitude, longitude);
     final timezone = tz.getLocation(ti);
-    DateTime now = tz.TZDateTime.from(DateTime.now(), timezone);
+    DateTime now = tz.TZDateTime.now(timezone);
 
     Prayer next = prayerTimes.nextPrayer(date: now);
 
@@ -583,7 +588,7 @@ class AppProvider extends ChangeNotifier {
     final timezone = tz.getLocation(ti);
     DateTime now = tz.TZDateTime.now(timezone);
     Prayer next = prayerTimes.nextPrayer(date: now);
-    // Prayer times are already in UTC, just return the local time for that city
+    // Convert UTC prayer time to local time
     DateTime nPT = prayerTimes.timeForPrayer(next).toLocal();
     return nPT;
   }
