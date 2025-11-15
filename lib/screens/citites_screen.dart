@@ -357,7 +357,7 @@ class CityExpansionTile extends StatelessWidget {
                 width: 15,
               ),
               Text(nextPrayerName == "fajrafter"
-                  ? "Fajr"
+                  ? "Fajr tomorrow"
                   : nextPrayerName.capitalize()),
               Spacer(),
               IconButton(

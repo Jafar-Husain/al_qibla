@@ -65,6 +65,8 @@ class _HomeTopInfoState extends State<HomeTopInfo> {
           switch (n.toLowerCase()) {
             case 'fajr':
               return 'Fajr';
+            case 'fajrafter':
+              return 'Fajr tomorrow';
             case 'sunrise':
               return 'Sunrise';
             case 'dhuhr':
