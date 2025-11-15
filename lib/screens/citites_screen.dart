@@ -11,11 +11,30 @@ import 'package:al_qibla/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:timezone/data/latest.dart' as tzdata;
+import 'package:timezone/timezone.dart' as tz;
+import 'package:lat_lng_to_timezone/lat_lng_to_timezone.dart' as tzmap;
 import 'package:provider/provider.dart';
 import 'package:al_qibla/widgets/navbar.dart';
 
-class CitiesScreen extends StatelessWidget {
+class CitiesScreen extends StatefulWidget {
   const CitiesScreen({super.key});
+
+  @override
+  State<CitiesScreen> createState() => _CitiesScreenState();
+}
+
+class _CitiesScreenState extends State<CitiesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Ensure cities list is loaded/refreshed when entering screen
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final app = Provider.of<AppProvider>(context, listen: false);
+      await app.getMyCitiesList();
+      await app.setMyCityCities();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -238,9 +257,7 @@ class CitiesScreen extends StatelessWidget {
                                 longitude: cityLi[index].longitude,
                               ),
                             ),
-                            Divider(
-                              thickness: 2,
-                            ),
+                            SizedBox(height: 12),
                           ],
                         );
                       },
@@ -288,7 +305,26 @@ class CityExpansionTile extends StatelessWidget {
         Provider.of<AppProvider>(context).getTimeFormat24()
             ? DateFormat('HH:mm')
             : DateFormat('h:mm a');
+    // Resolve the city's timezone
+    tzdata.initializeTimeZones();
+    final cityTzName = tzmap.latLngToTimezoneString(latitude, longitude);
+    final cityLocation = tz.getLocation(cityTzName);
+
+    DateTime toCity(DateTime dt) {
+      // Ensure we convert from UTC baseline to the city's wall time
+      final utc = dt.isUtc ? dt : dt.toUtc();
+      return tz.TZDateTime.from(utc, cityLocation);
+    }
+
     return ExpansionTile(
+      backgroundColor: Colors.transparent,
+      collapsedBackgroundColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(
+        side: BorderSide(color: Colors.transparent),
+      ),
+      collapsedShape: const RoundedRectangleBorder(
+        side: BorderSide(color: Colors.transparent),
+      ),
       title: Text(
         cityName,
         style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
@@ -312,7 +348,7 @@ class CityExpansionTile extends StatelessWidget {
                 width: 15,
               ),
               Text(
-                customDateFormat.format(nextPrayerTime),
+                customDateFormat.format(toCity(nextPrayerTime)),
                 style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
               ),
               SizedBox(
@@ -356,9 +392,7 @@ class CityExpansionTile extends StatelessWidget {
                   width: 37,
                 ),
                 Text(
-                  customDateFormat.format(
-                    prayerTimeList[index],
-                  ),
+                  customDateFormat.format(toCity(prayerTimeList[index])),
                   style: TextStyle(color: Colors.black),
                 ),
                 SizedBox(

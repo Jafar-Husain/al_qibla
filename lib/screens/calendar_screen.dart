@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/foundation/diagnostics.dart';
 import 'package:intl/intl.dart';
+import 'package:timezone/data/latest.dart' as tzdata;
+import 'package:timezone/timezone.dart' as tz;
+import 'package:lat_lng_to_timezone/lat_lng_to_timezone.dart' as tzmap;
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -82,6 +85,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
         Provider.of<AppProvider>(context).getTimeFormat24()
             ? DateFormat('HH:mm')
             : DateFormat('h:mm a');
+
+    // Resolve city's timezone once for formatting
+    tzdata.initializeTimeZones();
+    final cityTzName =
+        tzmap.latLngToTimezoneString(widget.latitude, widget.longitude);
+    final cityLocation = tz.getLocation(cityTzName);
+
+    DateTime toCity(DateTime dt) {
+      final utc = dt.isUtc ? dt : dt.toUtc();
+      return tz.TZDateTime.from(utc, cityLocation);
+    }
+
     List<String> prayerNames = [
       "Fajr",
       "Sunrise",
@@ -171,7 +186,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          DateFormat('EEEE, d MMMM yyyy').format(slcDay),
+                          DateFormat('EEEE, d MMMM yyyy')
+                              .format(widget.local ? slcDay : toCity(slcDay)),
                           style: TextStyle(
                               color: Colors.black, fontWeight: FontWeight.w800),
                         ),
@@ -192,7 +208,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                   ),
                                 ),
                                 Text(
-                                  customDateFormat.format(prayersList[i]),
+                                  customDateFormat.format(widget.local
+                                      ? prayersList[i]
+                                      : toCity(prayersList[i])),
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: Colors.black,
