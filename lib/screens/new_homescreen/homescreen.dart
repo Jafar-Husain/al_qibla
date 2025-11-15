@@ -80,8 +80,8 @@ class _NewHomeScreenState extends State<NewHomeScreen>
     }
 
     bool isNext(String name) {
-      final next = (appProvider.nextPrayerName ?? '').toString().toLowerCase();
-      return next == name.toLowerCase();
+      final current = (appProvider.currentPrayerName ?? '').toString().toLowerCase();
+      return current == name.toLowerCase();
     }
 
     const double tileHeight = 108;

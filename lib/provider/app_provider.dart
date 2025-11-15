@@ -123,6 +123,7 @@ class AppProvider extends ChangeNotifier {
   var nextPrayerTime = DateTime(
       DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0);
   late var nextPrayerName;
+  late var currentPrayerName;
   Widget currentSVG = const moonImage();
   FixedExtentScrollController scrollController = FixedExtentScrollController();
   bool _timeFormat24 = true; // modified removed late testing!
@@ -721,7 +722,33 @@ class AppProvider extends ChangeNotifier {
     // Convert from UTC to local time
     nextPrayerTime = prayerTimes.timeForPrayer(next).toLocal();
 
-    print(nextPrayerName);
+    // Determine current prayer (the one we're in now)
+    final now = DateTime.now();
+    final prayers = [
+      Prayer.fajr,
+      Prayer.sunrise,
+      Prayer.dhuhr,
+      Prayer.asr,
+      Prayer.maghrib,
+      Prayer.isha,
+    ];
+    
+    currentPrayerName = 'isha'; // Default to Isha if before Fajr
+    
+    for (int i = prayers.length - 1; i >= 0; i--) {
+      final prayerTime = prayerTimes.timeForPrayer(prayers[i]).toLocal();
+      if (now.isAfter(prayerTime)) {
+        currentPrayerName = prayers[i].name;
+        // Don't highlight anything between sunrise and dhuhr
+        if (currentPrayerName == 'sunrise') {
+          currentPrayerName = null;
+        }
+        break;
+      }
+    }
+
+    print('Next prayer: $nextPrayerName');
+    print('Current prayer: $currentPrayerName');
 
     notifyListeners();
   }
