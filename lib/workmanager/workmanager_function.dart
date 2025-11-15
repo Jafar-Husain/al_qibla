@@ -1,5 +1,4 @@
 import 'package:adhan_dart/adhan_dart.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,20 +6,44 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 
 final Map<String, CalculationParameters> calculationMethodsMap = {
-  'MuslimWorldLeague': CalculationMethod.muslimWorldLeague(),
-  'Egyptian': CalculationMethod.egyptian(),
-  'Karachi': CalculationMethod.karachi(),
-  'UmmAlQura': CalculationMethod.ummAlQura(),
-  'Dubai': CalculationMethod.dubai(),
-  'MoonsightingCommittee': CalculationMethod.moonsightingCommittee(),
-  'NorthAmerica': CalculationMethod.northAmerica(),
-  'Kuwait': CalculationMethod.kuwait(),
-  'Qatar': CalculationMethod.qatar(),
-  'Singapore': CalculationMethod.singapore(),
-  'Tehran': CalculationMethod.tehran(),
-  'Turkey': CalculationMethod.turkiye(),
-  'Morocco': CalculationMethod.morocco(),
+  'MuslimWorldLeague': CalculationMethodParameters.muslimWorldLeague(),
+  'Egyptian': CalculationMethodParameters.egyptian(),
+  'Karachi': CalculationMethodParameters.karachi(),
+  'UmmAlQura': CalculationMethodParameters.ummAlQura(),
+  'Dubai': CalculationMethodParameters.dubai(),
+  'MoonsightingCommittee': CalculationMethodParameters.moonsightingCommittee(),
+  'NorthAmerica': CalculationMethodParameters.northAmerica(),
+  'Kuwait': CalculationMethodParameters.kuwait(),
+  'Qatar': CalculationMethodParameters.qatar(),
+  'Singapore': CalculationMethodParameters.singapore(),
+  'Tehran': CalculationMethodParameters.tehran(),
+  'Turkey': CalculationMethodParameters.turkiye(),
+  'Morocco': CalculationMethodParameters.morocco(),
 };
+
+Madhab _stringToMadhab(String madhab) {
+  switch (madhab.toLowerCase()) {
+    case 'shafi':
+      return Madhab.shafi;
+    case 'hanafi':
+      return Madhab.hanafi;
+    default:
+      return Madhab.shafi;
+  }
+}
+
+HighLatitudeRule _stringToHighLatitudeRule(String rule) {
+  switch (rule.toLowerCase()) {
+    case 'middleofthenight':
+      return HighLatitudeRule.middleOfTheNight;
+    case 'seventhofthenight':
+      return HighLatitudeRule.seventhOfTheNight;
+    case 'twilightangle':
+      return HighLatitudeRule.twilightAngle;
+    default:
+      return HighLatitudeRule.middleOfTheNight;
+  }
+}
 
 Future<PrayerTimes> calculatePrayerTimes(
   double latitude,
@@ -32,8 +55,8 @@ Future<PrayerTimes> calculatePrayerTimes(
 ) async {
   Coordinates coordinates = Coordinates(latitude, longitude);
   CalculationParameters params = method;
-  params.madhab = madhab;
-  params.highLatitudeRule = highLatitudeRule;
+  params.madhab = _stringToMadhab(madhab);
+  params.highLatitudeRule = _stringToHighLatitudeRule(highLatitudeRule);
   PrayerTimes prayerTimes = PrayerTimes(
     date: date,
     coordinates: coordinates,
@@ -46,11 +69,10 @@ Future<List> setNextPrayerNameFromPrayerTimes(
   PrayerTimes prayerTimes,
 ) async {
   tz.initializeTimeZones();
-  String ti = await FlutterNativeTimezone.getLocalTimezone();
-  final timezone = tz.getLocation(ti);
-  String next = prayerTimes.nextPrayer();
+  final timezone = tz.local;
+  Prayer next = prayerTimes.nextPrayer();
 
-  return [next, tz.TZDateTime.from(prayerTimes.timeForPrayer(next)!, timezone)];
+  return [next.name, tz.TZDateTime.from(prayerTimes.timeForPrayer(next)!, timezone)];
 }
 
 Future<bool?> updateWidget() async {

@@ -7,12 +7,12 @@ environment:
   sdk: '>=3.0.5 <4.0.0'
 
 dependencies:
-  adhan_dart: ^1.0.8
+  adhan_dart: ^1.2.0
+  app_settings: ^5.1.1
   flutter:
     sdk: flutter
   flutter_compass: ^0.8.0
   flutter_local_notifications: ^18.0.1
-  flutter_native_timezone: ^2.0.0
   flutter_svg: ^2.0.5
   geocoding: ^3.0.0
   geolocator: ^13.0.2
@@ -22,14 +22,10 @@ dependencies:
   location: ^7.0.1
   provider: ^6.0.5
   shared_preferences: ^2.2.1
-  system_settings: ^2.1.0
   table_calendar: ^3.0.9
   timezone: ^0.10.0
   win32: ^5.5.3
-  workmanager:
-    git:
-      url: https://github.com/fluttercommunity/flutter_workmanager.git
-      ref: b783000
+  workmanager: ^0.9.0
 
 dev_dependencies:
   flutter_test:

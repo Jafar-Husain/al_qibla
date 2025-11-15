@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:system_settings/system_settings.dart';
+import 'package:app_settings/app_settings.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -336,7 +336,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   trailing: Icon(
                       Icons.arrow_forward_ios), // Right-hand side arrow icon
                   onTap: () {
-                    SystemSettings.appNotifications();
+                    AppSettings.openAppSettings(type: AppSettingsType.notification);
                     // Add any action you want when the ListTile is tapped
                   },
                 ),
@@ -368,7 +368,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   trailing: Icon(
                       Icons.arrow_forward_ios), // Right-hand side arrow icon
                   onTap: () {
-                    SystemSettings.location();
+                    AppSettings.openAppSettings(type: AppSettingsType.location);
                     // Add any action you want when the ListTile is tapped
                   },
                 ),

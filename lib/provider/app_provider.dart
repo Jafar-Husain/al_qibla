@@ -12,7 +12,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:lat_lng_to_timezone/lat_lng_to_timezone.dart' as tzmap;
 import 'package:geocoding/geocoding.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -67,19 +66,19 @@ class AppProvider extends ChangeNotifier {
   };
 
   final Map<String, CalculationParameters> calculationMethodsMap = {
-    'MuslimWorldLeague': CalculationMethod.muslimWorldLeague(),
-    'Egyptian': CalculationMethod.egyptian(),
-    'Karachi': CalculationMethod.karachi(),
-    'UmmAlQura': CalculationMethod.ummAlQura(),
-    'Dubai': CalculationMethod.dubai(),
-    'MoonsightingCommittee': CalculationMethod.moonsightingCommittee(),
-    'NorthAmerica': CalculationMethod.northAmerica(),
-    'Kuwait': CalculationMethod.kuwait(),
-    'Qatar': CalculationMethod.qatar(),
-    'Singapore': CalculationMethod.singapore(),
-    'Tehran': CalculationMethod.tehran(),
-    'Turkey': CalculationMethod.turkiye(),
-    'Morocco': CalculationMethod.morocco(),
+    'MuslimWorldLeague': CalculationMethodParameters.muslimWorldLeague(),
+    'Egyptian': CalculationMethodParameters.egyptian(),
+    'Karachi': CalculationMethodParameters.karachi(),
+    'UmmAlQura': CalculationMethodParameters.ummAlQura(),
+    'Dubai': CalculationMethodParameters.dubai(),
+    'MoonsightingCommittee': CalculationMethodParameters.moonsightingCommittee(),
+    'NorthAmerica': CalculationMethodParameters.northAmerica(),
+    'Kuwait': CalculationMethodParameters.kuwait(),
+    'Qatar': CalculationMethodParameters.qatar(),
+    'Singapore': CalculationMethodParameters.singapore(),
+    'Tehran': CalculationMethodParameters.tehran(),
+    'Turkey': CalculationMethodParameters.turkiye(),
+    'Morocco': CalculationMethodParameters.morocco(),
   };
 
   final Map<String, String> calculationMethodRadioTileMap = {
@@ -464,6 +463,30 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Madhab _stringToMadhab(String madhab) {
+    switch (madhab.toLowerCase()) {
+      case 'shafi':
+        return Madhab.shafi;
+      case 'hanafi':
+        return Madhab.hanafi;
+      default:
+        return Madhab.shafi;
+    }
+  }
+
+  HighLatitudeRule _stringToHighLatitudeRule(String rule) {
+    switch (rule.toLowerCase()) {
+      case 'middleofthenight':
+        return HighLatitudeRule.middleOfTheNight;
+      case 'seventhofthenight':
+        return HighLatitudeRule.seventhOfTheNight;
+      case 'twilightangle':
+        return HighLatitudeRule.twilightAngle;
+      default:
+        return HighLatitudeRule.middleOfTheNight;
+    }
+  }
+
   Future<PrayerTimes> calculatePrayerTimes(
     double latitude,
     double longitude,
@@ -474,45 +497,49 @@ class AppProvider extends ChangeNotifier {
   ) async {
     Coordinates coordinates = Coordinates(latitude, longitude);
     CalculationParameters params = method;
-    params.madhab = madhab;
-    params.highLatitudeRule = highLatitudeRule;
+    params.madhab = _stringToMadhab(madhab);
+    params.highLatitudeRule = _stringToHighLatitudeRule(highLatitudeRule);
+
+    // Use UTC to avoid DST issues - convert input date to UTC
+    final dateUtc = date.toUtc();
+    final targetDateUtc = DateTime.utc(dateUtc.year, dateUtc.month, dateUtc.day);
+
     PrayerTimes prayerTimes = PrayerTimes(
-        date: date, coordinates: coordinates, calculationParameters: params);
+        date: targetDateUtc, coordinates: coordinates, calculationParameters: params);
     return prayerTimes;
   }
 
   Future<List<DateTime>> calculatePrayerTimeFromPrayerTimes(
     PrayerTimes prayerTimes,
   ) async {
-    tz.initializeTimeZones();
-    String ti = await FlutterNativeTimezone.getLocalTimezone();
-    final timezone = tz.getLocation(ti);
-    DateTime fajrTime = tz.TZDateTime.from(prayerTimes.fajr!, timezone);
-    DateTime sunriseTime = tz.TZDateTime.from(prayerTimes.sunrise!, timezone);
-    DateTime dhuhrTime = tz.TZDateTime.from(prayerTimes.dhuhr!, timezone);
-    DateTime asrTime = tz.TZDateTime.from(prayerTimes.asr!, timezone);
-    DateTime maghribTime = tz.TZDateTime.from(prayerTimes.maghrib!, timezone);
-    DateTime ishaTime = tz.TZDateTime.from(prayerTimes.isha!, timezone);
+    // The adhan_dart library returns times in UTC, convert to local
+    DateTime fajrTime = prayerTimes.fajr.toLocal();
+    DateTime sunriseTime = prayerTimes.sunrise.toLocal();
+    DateTime dhuhrTime = prayerTimes.dhuhr.toLocal();
+    DateTime asrTime = prayerTimes.asr.toLocal();
+    DateTime maghribTime = prayerTimes.maghrib.toLocal();
+    DateTime ishaTime = prayerTimes.isha.toLocal();
 
     return [fajrTime, sunriseTime, dhuhrTime, asrTime, maghribTime, ishaTime];
   }
 
   Future<String> getTimeDifference(double latitude, double longitude) async {
-    // Load the time zone data
-    String ti = await FlutterNativeTimezone.getLocalTimezone();
-    final Localtimezone = await tz.getLocation(ti);
+    // Get device's timezone location using lat/lng
+    tz.initializeTimeZones();
+    String deviceTimezoneString = tzmap.latLngToTimezoneString(_latitude, _longitude);
+    final deviceTimeZone = tz.getLocation(deviceTimezoneString);
 
-    String timezone21 = tzmap.latLngToTimezoneString(latitude, longitude);
-    final cityTimeZone = await tz.getLocation(timezone21);
-    DateTime deviceTime = tz.TZDateTime.now(Localtimezone);
-    DateTime targetTime = tz.TZDateTime.now(cityTimeZone);
+    String cityTimezoneString = tzmap.latLngToTimezoneString(latitude, longitude);
+    final cityTimeZone = tz.getLocation(cityTimezoneString);
 
-    print("my tz $Localtimezone, city tz $timezone21");
-    print("my time:$deviceTime, city time: $targetTime");
-    // Calculate the time difference in milliseconds
+    DateTime deviceTime = tz.TZDateTime.now(deviceTimeZone);
+    DateTime cityTime = tz.TZDateTime.now(cityTimeZone);
+
+    print("my tz $deviceTimezoneString, city tz $cityTimezoneString");
+    print("my time:$deviceTime, city time: $cityTime");
 
     Duration myTzOffset = deviceTime.timeZoneOffset;
-    Duration cityTzOffset = targetTime.timeZoneOffset;
+    Duration cityTzOffset = cityTime.timeZoneOffset;
 
     Duration offsetDifference = myTzOffset - cityTzOffset;
 
@@ -535,8 +562,6 @@ class AppProvider extends ChangeNotifier {
     } else {
       return '${hours.toString().replaceFirst("-", "")} hours and $minutes minutes $aheadOrBehind';
     }
-
-    // Return the time difference
   }
 
   Future<String> getCityNextPrayerName(
@@ -546,9 +571,9 @@ class AppProvider extends ChangeNotifier {
     final timezone = tz.getLocation(ti);
     DateTime now = tz.TZDateTime.from(DateTime.now(), timezone);
 
-    String next = prayerTimes.nextPrayer(date: now);
+    Prayer next = prayerTimes.nextPrayer(date: now);
 
-    return next;
+    return next.name;
   }
 
   Future<DateTime> getCityNextPrayerTime(
@@ -556,24 +581,22 @@ class AppProvider extends ChangeNotifier {
     tz.initializeTimeZones();
     String ti = tzmap.latLngToTimezoneString(latitude, longitude);
     final timezone = tz.getLocation(ti);
-    DateTime now = tz.TZDateTime.from(DateTime.now(), timezone);
-    String next = prayerTimes.nextPrayer(date: now);
-    DateTime nPT =
-        tz.TZDateTime.from(prayerTimes.timeForPrayer(next)!, timezone);
+    DateTime now = tz.TZDateTime.now(timezone);
+    Prayer next = prayerTimes.nextPrayer(date: now);
+    // Prayer times are already in UTC, just return the local time for that city
+    DateTime nPT = prayerTimes.timeForPrayer(next).toLocal();
     return nPT;
   }
 
   Future<List<DateTime>> calculateCityPrayerTimeFromPrayerTimes(
       PrayerTimes prayerTimes, double latitude, double longitude) async {
-    tz.initializeTimeZones();
-    String ti = tzmap.latLngToTimezoneString(latitude, longitude);
-    final timezone = tz.getLocation(ti);
-    DateTime fajrTime = tz.TZDateTime.from(prayerTimes.fajr!, timezone);
-    DateTime sunriseTime = tz.TZDateTime.from(prayerTimes.sunrise!, timezone);
-    DateTime dhuhrTime = tz.TZDateTime.from(prayerTimes.dhuhr!, timezone);
-    DateTime asrTime = tz.TZDateTime.from(prayerTimes.asr!, timezone);
-    DateTime maghribTime = tz.TZDateTime.from(prayerTimes.maghrib!, timezone);
-    DateTime ishaTime = tz.TZDateTime.from(prayerTimes.isha!, timezone);
+    // Prayer times from adhan_dart are in UTC, convert to local
+    DateTime fajrTime = prayerTimes.fajr.toLocal();
+    DateTime sunriseTime = prayerTimes.sunrise.toLocal();
+    DateTime dhuhrTime = prayerTimes.dhuhr.toLocal();
+    DateTime asrTime = prayerTimes.asr.toLocal();
+    DateTime maghribTime = prayerTimes.maghrib.toLocal();
+    DateTime ishaTime = prayerTimes.isha.toLocal();
 
     return [fajrTime, sunriseTime, dhuhrTime, asrTime, maghribTime, ishaTime];
   }
@@ -614,13 +637,10 @@ class AppProvider extends ChangeNotifier {
   Future setNextPrayerNameFromPrayerTimes(
     PrayerTimes prayerTimes,
   ) async {
-    tz.initializeTimeZones();
-    String ti = await FlutterNativeTimezone.getLocalTimezone();
-    final timezone = tz.getLocation(ti);
-    String next = prayerTimes.nextPrayer();
-    nextPrayerName = next;
-    nextPrayerTime =
-        tz.TZDateTime.from(prayerTimes.timeForPrayer(next)!, timezone);
+    Prayer next = prayerTimes.nextPrayer();
+    nextPrayerName = next.name;
+    // Convert from UTC to local time
+    nextPrayerTime = prayerTimes.timeForPrayer(next).toLocal();
 
     print(nextPrayerName);
 

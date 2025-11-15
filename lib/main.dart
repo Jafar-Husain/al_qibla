@@ -58,7 +58,7 @@ class MainApp extends StatelessWidget {
         theme: ThemeData(
           colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue),
           dialogBackgroundColor: Colors.white,
-          dialogTheme: const DialogTheme(
+          dialogTheme: const DialogThemeData(
             backgroundColor: Colors.white,
             titleTextStyle: TextStyle(
                 color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
