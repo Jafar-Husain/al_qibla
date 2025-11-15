@@ -134,6 +134,13 @@ class AppProvider extends ChangeNotifier {
   late int _maghribMissed;
   late int _ishaMissed;
 
+  // Prayer notification preferences
+  bool _fajrNotification = true;
+  bool _dhuhrNotification = true;
+  bool _asrNotification = true;
+  bool _maghribNotification = true;
+  bool _ishaNotification = true;
+
   Future<void> getFajrMissed() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _fajrMissed = await prefs.getInt("fajrMissed") ?? 0;
@@ -162,6 +169,66 @@ class AppProvider extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _ishaMissed = await prefs.getInt("ishaMissed") ?? 0;
     notifyListeners();
+  }
+
+  Future<void> loadNotificationPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _fajrNotification = prefs.getBool("fajrNotification") ?? true;
+    _dhuhrNotification = prefs.getBool("dhuhrNotification") ?? true;
+    _asrNotification = prefs.getBool("asrNotification") ?? true;
+    _maghribNotification = prefs.getBool("maghribNotification") ?? true;
+    _ishaNotification = prefs.getBool("ishaNotification") ?? true;
+    notifyListeners();
+  }
+
+  Future<void> togglePrayerNotification(String prayerName, bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    
+    switch (prayerName.toLowerCase()) {
+      case 'fajr':
+        _fajrNotification = value;
+        await prefs.setBool("fajrNotification", value);
+        break;
+      case 'dhuhr':
+        _dhuhrNotification = value;
+        await prefs.setBool("dhuhrNotification", value);
+        break;
+      case 'asr':
+        _asrNotification = value;
+        await prefs.setBool("asrNotification", value);
+        break;
+      case 'maghrib':
+        _maghribNotification = value;
+        await prefs.setBool("maghribNotification", value);
+        break;
+      case 'isha':
+        _ishaNotification = value;
+        await prefs.setBool("ishaNotification", value);
+        break;
+    }
+    
+    notifyListeners();
+    
+    // Reschedule notifications with new preferences
+    List<DateTime> next10DaysPrayerTimes = await getNext10DaysPrayerTimes();
+    await schedulePrayerNotifications(next10DaysPrayerTimes);
+  }
+
+  bool isPrayerNotificationEnabled(String prayerName) {
+    switch (prayerName.toLowerCase()) {
+      case 'fajr':
+        return _fajrNotification;
+      case 'dhuhr':
+        return _dhuhrNotification;
+      case 'asr':
+        return _asrNotification;
+      case 'maghrib':
+        return _maghribNotification;
+      case 'isha':
+        return _ishaNotification;
+      default:
+        return false;
+    }
   }
 
   //getters:
@@ -235,6 +302,13 @@ class AppProvider extends ChangeNotifier {
   String getHighLatitudeRule() {
     return _highLatitudeRule;
   }
+
+  // Notification preference getters
+  bool getFajrNotification() => _fajrNotification;
+  bool getDhuhrNotification() => _dhuhrNotification;
+  bool getAsrNotification() => _asrNotification;
+  bool getMaghribNotification() => _maghribNotification;
+  bool getIshaNotification() => _ishaNotification;
 
   //setters
 
@@ -982,6 +1056,7 @@ class AppProvider extends ChangeNotifier {
       await firstLaunch();
     }
 
+    await loadNotificationPreferences();
     await getPrayerTimes(init: true, refresh: false);
   }
 
@@ -1004,6 +1079,9 @@ class AppProvider extends ChangeNotifier {
       if (prayerIndex == 1) continue;
 
       final prayerName = prayerNames[prayerIndex];
+
+      // Skip if notification is disabled for this prayer
+      if (!isPrayerNotificationEnabled(prayerName)) continue;
 
       // Check if the scheduled date has already passed
       if (prayerTimes[i].isAfter(DateTime.now())) {

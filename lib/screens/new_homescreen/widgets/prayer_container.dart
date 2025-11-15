@@ -5,12 +5,16 @@ class PrayerContainer extends StatelessWidget {
   final String prayerName;
   final String prayerTime;
   final bool isCurrentPrayer;
+  final bool? notificationEnabled;
+  final Function(bool)? onNotificationToggle;
 
   const PrayerContainer({
     super.key,
     required this.prayerName,
     required this.prayerTime,
     this.isCurrentPrayer = false,
+    this.notificationEnabled,
+    this.onNotificationToggle,
   });
 
   @override
@@ -68,21 +72,33 @@ class PrayerContainer extends StatelessWidget {
               ],
             ),
           ),
-          // Notification bell (placeholder)
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: isDarkMode
-                  ? AppTheme.darkBigContainer
-                  : AppTheme.smallContainer,
-              borderRadius: BorderRadius.circular(12),
+          // Notification bell (only show if onNotificationToggle is provided)
+          if (onNotificationToggle != null)
+            GestureDetector(
+              onTap: () {
+                if (onNotificationToggle != null && notificationEnabled != null) {
+                  onNotificationToggle!(!notificationEnabled!);
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: isDarkMode
+                      ? AppTheme.darkBigContainer
+                      : AppTheme.smallContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  notificationEnabled == true
+                      ? Icons.notifications_active
+                      : Icons.notifications_off_outlined,
+                  color: notificationEnabled == true
+                      ? (isDarkMode ? AppTheme.accentColor : AppTheme.primaryColor)
+                      : (isDarkMode ? Colors.white38 : Colors.grey),
+                  size: 20,
+                ),
+              ),
             ),
-            child: Icon(
-              Icons.notifications_outlined,
-              color: isDarkMode ? Colors.white70 : AppTheme.secondaryColor,
-              size: 20,
-            ),
-          ),
         ],
       ),
     );

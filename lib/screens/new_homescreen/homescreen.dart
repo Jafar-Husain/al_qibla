@@ -98,6 +98,10 @@ class _NewHomeScreenState extends State<NewHomeScreen>
             prayerName: 'Fajr',
             prayerTime: fmt(0),
             isCurrentPrayer: isNext('fajr'),
+            notificationEnabled: appProvider.getFajrNotification(),
+            onNotificationToggle: (value) {
+              appProvider.togglePrayerNotification('Fajr', value);
+            },
           ),
         ),
         SizedBox(
@@ -106,6 +110,7 @@ class _NewHomeScreenState extends State<NewHomeScreen>
             prayerName: 'Sunrise',
             prayerTime: fmt(1),
             isCurrentPrayer: isNext('sunrise'),
+            // No notification for sunrise
           ),
         ),
         SizedBox(
@@ -114,6 +119,10 @@ class _NewHomeScreenState extends State<NewHomeScreen>
             prayerName: 'Dhuhr',
             prayerTime: fmt(2),
             isCurrentPrayer: isNext('dhuhr'),
+            notificationEnabled: appProvider.getDhuhrNotification(),
+            onNotificationToggle: (value) {
+              appProvider.togglePrayerNotification('Dhuhr', value);
+            },
           ),
         ),
         SizedBox(
@@ -122,6 +131,10 @@ class _NewHomeScreenState extends State<NewHomeScreen>
             prayerName: 'Asr',
             prayerTime: fmt(3),
             isCurrentPrayer: isNext('asr'),
+            notificationEnabled: appProvider.getAsrNotification(),
+            onNotificationToggle: (value) {
+              appProvider.togglePrayerNotification('Asr', value);
+            },
           ),
         ),
         SizedBox(
@@ -130,6 +143,10 @@ class _NewHomeScreenState extends State<NewHomeScreen>
             prayerName: 'Maghrib',
             prayerTime: fmt(4),
             isCurrentPrayer: isNext('maghrib'),
+            notificationEnabled: appProvider.getMaghribNotification(),
+            onNotificationToggle: (value) {
+              appProvider.togglePrayerNotification('Maghrib', value);
+            },
           ),
         ),
         SizedBox(
@@ -138,6 +155,10 @@ class _NewHomeScreenState extends State<NewHomeScreen>
             prayerName: 'Isha',
             prayerTime: fmt(5),
             isCurrentPrayer: isNext('isha'),
+            notificationEnabled: appProvider.getIshaNotification(),
+            onNotificationToggle: (value) {
+              appProvider.togglePrayerNotification('Isha', value);
+            },
           ),
         ),
       ],
