@@ -80,6 +80,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
               backgroundColor: Colors.transparent,
               foregroundColor:
                   isDarkMode ? Colors.white : AppTheme.primaryColor,
+              showBackButton: false,
             ),
             backgroundColor: AppTheme.getCurrentBackgroundColor(isDarkMode),
             body: SafeArea(

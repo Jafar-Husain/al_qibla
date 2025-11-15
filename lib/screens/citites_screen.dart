@@ -203,6 +203,7 @@ class _CitiesScreenState extends State<CitiesScreen> {
             foregroundColor: Theme.of(context).brightness == Brightness.dark
                 ? Colors.white
                 : AppTheme.primaryColor,
+            showBackButton: false,
           ),
           body: SafeArea(
             bottom: false,

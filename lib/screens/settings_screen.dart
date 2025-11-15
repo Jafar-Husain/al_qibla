@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
-import 'package:adhan_dart/adhan_dart.dart';
 import 'package:al_qibla/provider/app_provider.dart';
 import 'package:al_qibla/widgets/custom_app_bar.dart';
 import 'package:al_qibla/app_theme.dart';
@@ -60,6 +59,7 @@ class _SettingScreenState extends State<SettingScreen> {
           title: "Settings",
           backgroundColor: Colors.transparent,
           foregroundColor: isDarkMode ? Colors.white : AppTheme.primaryColor,
+          showBackButton: false,
         ),
         body: SafeArea(
           bottom: false,
@@ -69,7 +69,6 @@ class _SettingScreenState extends State<SettingScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  
                   const SizedBox(height: 16),
                   SectionTitle(
                     title: "Calculation Parameters",
