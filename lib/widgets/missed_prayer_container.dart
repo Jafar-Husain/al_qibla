@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:al_qibla/app_theme.dart';
 
 class MissedContainer extends StatelessWidget {
   MissedContainer({
@@ -11,7 +12,7 @@ class MissedContainer extends StatelessWidget {
     required this.onClickMinus,
     required this.onClickEdit,
   });
-  
+
   final String? prayerName;
   final int? missedNumber;
   final Color? Color1;
@@ -19,28 +20,24 @@ class MissedContainer extends StatelessWidget {
   final Function onClickAction;
   final Function onClickMinus;
   final Function onClickEdit;
-  
+
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final iconColor = isDarkMode ? AppTheme.accentColor : AppTheme.primaryColor;
+
     return GestureDetector(
       onTap: () {
         onClickEdit();
       },
       child: Container(
+        height: 120,
         padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
         margin: const EdgeInsets.only(bottom: 20),
         width: double.infinity,
-        height: 120,
         decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(15)),
-          gradient: LinearGradient(
-            colors: [
-              Color1 ?? Colors.blue,
-              Color2 ?? Colors.blueAccent,
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+          color: AppTheme.getCurrentSmallContainer(isDarkMode),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -50,12 +47,12 @@ class MissedContainer extends StatelessWidget {
               flex: 2,
               child: Text(
                 "$prayerName",
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: isDarkMode ? Colors.white : AppTheme.primaryColor,
                   fontSize: 25,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                 ),
-                overflow: TextOverflow.ellipsis, // Prevents overflow
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             // Action Buttons and Missed Number
@@ -69,36 +66,36 @@ class MissedContainer extends StatelessWidget {
                     onTap: () {
                       onClickMinus();
                     },
-                    child: const Icon(
+                    child: Icon(
                       Icons.remove_circle,
-                      color: Colors.white,
+                      color: iconColor,
                       size: 45,
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 12),
                   // Missed Number with dynamic width
                   Flexible(
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text(
                         "$missedNumber",
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: isDarkMode ? Colors.white : Colors.black87,
                           fontSize: 25,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 12),
                   // Add Button
                   GestureDetector(
                     onTap: () {
                       onClickAction();
                     },
-                    child: const Icon(
+                    child: Icon(
                       Icons.add_circle,
-                      color: Colors.white,
+                      color: iconColor,
                       size: 45,
                     ),
                   ),

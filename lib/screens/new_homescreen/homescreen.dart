@@ -10,6 +10,7 @@ import 'widgets/prayer_container.dart';
 import 'package:al_qibla/app_theme.dart';
 import 'package:al_qibla/provider/app_provider.dart';
 import 'package:al_qibla/widgets/navbar.dart';
+import 'package:al_qibla/widgets/missed_prayer_container.dart';
 
 class NewHomeScreen extends StatefulWidget {
   const NewHomeScreen({super.key});
@@ -53,7 +54,7 @@ class _NewHomeScreenState extends State<NewHomeScreen>
       case HomeMenuTab.calendar:
         return _buildPlaceholderContent('Calendar', isDarkMode);
       case HomeMenuTab.information:
-        return _buildPlaceholderContent('Missed Prayers', isDarkMode);
+        return _buildMissedPrayersContent(appProvider, isDarkMode);
       case HomeMenuTab.events:
         return _buildPlaceholderContent('Events', isDarkMode);
     }
@@ -80,7 +81,8 @@ class _NewHomeScreenState extends State<NewHomeScreen>
     }
 
     bool isNext(String name) {
-      final current = (appProvider.currentPrayerName ?? '').toString().toLowerCase();
+      final current =
+          (appProvider.currentPrayerName ?? '').toString().toLowerCase();
       return current == name.toLowerCase();
     }
 
@@ -162,6 +164,195 @@ class _NewHomeScreenState extends State<NewHomeScreen>
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildMissedPrayersContent(
+    AppProvider appProvider,
+    bool isDarkMode,
+  ) {
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 30, 20, 120),
+      children: [
+        MissedContainer(
+          prayerName: "Fajr",
+          missedNumber: appProvider.fajrMissed(),
+          Color1: appProvider.firstGrad[0],
+          Color2: appProvider.secondGrad[0],
+          onClickAction: () {
+            appProvider.setFajrMissed(appProvider.fajrMissed() + 1);
+          },
+          onClickMinus: () {
+            appProvider.setFajrMissed(appProvider.fajrMissed() - 1);
+          },
+          onClickEdit: () {
+            _showInputDialog(context, appProvider, 0);
+          },
+        ),
+        MissedContainer(
+          prayerName: "Dhuhr",
+          missedNumber: appProvider.dhuhrMissed(),
+          Color1: appProvider.firstGrad[2],
+          Color2: appProvider.secondGrad[2],
+          onClickAction: () {
+            appProvider.setDhuhrMissed(appProvider.dhuhrMissed() + 1);
+          },
+          onClickMinus: () {
+            appProvider.setDhuhrMissed(appProvider.dhuhrMissed() - 1);
+          },
+          onClickEdit: () {
+            _showInputDialog(context, appProvider, 1);
+          },
+        ),
+        MissedContainer(
+          prayerName: "Asr",
+          missedNumber: appProvider.asrMissed(),
+          Color1: appProvider.firstGrad[3],
+          Color2: appProvider.secondGrad[3],
+          onClickAction: () {
+            appProvider.setAsrMissed(appProvider.asrMissed() + 1);
+          },
+          onClickMinus: () {
+            appProvider.setAsrMissed(appProvider.asrMissed() - 1);
+          },
+          onClickEdit: () {
+            _showInputDialog(context, appProvider, 2);
+          },
+        ),
+        MissedContainer(
+          prayerName: "Maghrib",
+          missedNumber: appProvider.maghribMissed(),
+          Color1: appProvider.firstGrad[4],
+          Color2: appProvider.secondGrad[4],
+          onClickAction: () {
+            appProvider.setMaghribMissed(appProvider.maghribMissed() + 1);
+          },
+          onClickMinus: () {
+            appProvider.setMaghribMissed(appProvider.maghribMissed() - 1);
+          },
+          onClickEdit: () {
+            _showInputDialog(context, appProvider, 3);
+          },
+        ),
+        MissedContainer(
+          prayerName: "Isha",
+          missedNumber: appProvider.ishaMissed(),
+          Color1: appProvider.firstGrad[5],
+          Color2: appProvider.secondGrad[5],
+          onClickAction: () {
+            appProvider.setIshaMissed(appProvider.ishaMissed() + 1);
+          },
+          onClickMinus: () {
+            appProvider.setIshaMissed(appProvider.ishaMissed() - 1);
+          },
+          onClickEdit: () {
+            _showInputDialog(context, appProvider, 4);
+          },
+        ),
+      ],
+    );
+  }
+
+  Future<void> _showInputDialog(
+      BuildContext context, AppProvider appProvider, int prayerInt) async {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    String inputValue = '';
+
+    // Set the default value based on the prayerInt
+    int defaultValue;
+    if (prayerInt == 0) {
+      defaultValue = appProvider.fajrMissed();
+    } else if (prayerInt == 1) {
+      defaultValue = appProvider.dhuhrMissed();
+    } else if (prayerInt == 2) {
+      defaultValue = appProvider.asrMissed();
+    } else if (prayerInt == 3) {
+      defaultValue = appProvider.maghribMissed();
+    } else {
+      defaultValue = appProvider.ishaMissed();
+    }
+
+    // Initialize the TextEditingController with the default value
+    final TextEditingController textController =
+        TextEditingController(text: defaultValue.toString());
+
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: isDarkMode
+              ? AppTheme.darkBigContainer
+              : AppTheme.getCurrentBackgroundColor(isDarkMode),
+          title: Text(
+            'Enter Value',
+            style: TextStyle(
+              color: isDarkMode ? Colors.white : AppTheme.primaryColor,
+            ),
+          ),
+          content: TextField(
+            controller: textController,
+            keyboardType: TextInputType.number,
+            onChanged: (value) {
+              inputValue = value;
+            },
+            style: TextStyle(
+              color: isDarkMode ? Colors.white : Colors.black,
+            ),
+            decoration: InputDecoration(
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: isDarkMode ? Colors.white54 : Colors.black54,
+                ),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color:
+                      isDarkMode ? AppTheme.accentColor : AppTheme.primaryColor,
+                ),
+              ),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: isDarkMode ? Colors.white70 : Colors.black54,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text(
+                'Set',
+                style: TextStyle(
+                  color:
+                      isDarkMode ? AppTheme.accentColor : AppTheme.primaryColor,
+                ),
+              ),
+              onPressed: () {
+                inputValue =
+                    inputValue.isEmpty ? defaultValue.toString() : inputValue;
+
+                if (prayerInt == 0) {
+                  appProvider.setFajrMissed(int.parse(inputValue));
+                } else if (prayerInt == 1) {
+                  appProvider.setDhuhrMissed(int.parse(inputValue));
+                } else if (prayerInt == 2) {
+                  appProvider.setAsrMissed(int.parse(inputValue));
+                } else if (prayerInt == 3) {
+                  appProvider.setMaghribMissed(int.parse(inputValue));
+                } else if (prayerInt == 4) {
+                  appProvider.setIshaMissed(int.parse(inputValue));
+                }
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 

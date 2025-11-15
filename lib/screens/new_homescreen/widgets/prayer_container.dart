@@ -76,7 +76,8 @@ class PrayerContainer extends StatelessWidget {
           if (onNotificationToggle != null)
             GestureDetector(
               onTap: () {
-                if (onNotificationToggle != null && notificationEnabled != null) {
+                if (onNotificationToggle != null &&
+                    notificationEnabled != null) {
                   onNotificationToggle!(!notificationEnabled!);
                 }
               },
@@ -93,7 +94,9 @@ class PrayerContainer extends StatelessWidget {
                       ? Icons.notifications_active
                       : Icons.notifications_off_outlined,
                   color: notificationEnabled == true
-                      ? (isDarkMode ? AppTheme.accentColor : AppTheme.primaryColor)
+                      ? (isDarkMode
+                          ? AppTheme.accentColor
+                          : AppTheme.primaryColor)
                       : (isDarkMode ? Colors.white38 : Colors.grey),
                   size: 20,
                 ),

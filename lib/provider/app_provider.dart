@@ -184,7 +184,7 @@ class AppProvider extends ChangeNotifier {
 
   Future<void> togglePrayerNotification(String prayerName, bool value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    
+
     switch (prayerName.toLowerCase()) {
       case 'fajr':
         _fajrNotification = value;
@@ -207,9 +207,9 @@ class AppProvider extends ChangeNotifier {
         await prefs.setBool("ishaNotification", value);
         break;
     }
-    
+
     notifyListeners();
-    
+
     // Reschedule notifications with new preferences
     List<DateTime> next10DaysPrayerTimes = await getNext10DaysPrayerTimes();
     await schedulePrayerNotifications(next10DaysPrayerTimes);
@@ -732,9 +732,9 @@ class AppProvider extends ChangeNotifier {
       Prayer.maghrib,
       Prayer.isha,
     ];
-    
+
     currentPrayerName = 'isha'; // Default to Isha if before Fajr
-    
+
     for (int i = prayers.length - 1; i >= 0; i--) {
       final prayerTime = prayerTimes.timeForPrayer(prayers[i]).toLocal();
       if (now.isAfter(prayerTime)) {
