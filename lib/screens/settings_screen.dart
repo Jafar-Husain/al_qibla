@@ -270,6 +270,24 @@ class _SettingScreenState extends State<SettingScreen> {
                   ),
                   const SizedBox(height: 16),
                   SettingContainer(
+                    title: 'Dark Theme',
+                    subtitle:
+                        Provider.of<AppProvider>(context).getIsDarkMode()
+                            ? 'Enabled'
+                            : 'Disabled',
+                    trailing: ToggleSwitch(
+                      value:
+                          Provider.of<AppProvider>(context).getIsDarkMode(),
+                      onChanged: (value) {
+                        Provider.of<AppProvider>(context, listen: false)
+                            .setDarkMode(value);
+                      },
+                      isDarkMode: isDarkMode,
+                    ),
+                    isDarkMode: isDarkMode,
+                  ),
+                  const SizedBox(height: 12),
+                  SettingContainer(
                     title: '24 Hour Format',
                     subtitle:
                         Provider.of<AppProvider>(context).getTimeFormat24()
@@ -286,7 +304,6 @@ class _SettingScreenState extends State<SettingScreen> {
                     ),
                     isDarkMode: isDarkMode,
                   ),
-                  const SizedBox(height: 12),
                   const SizedBox(height: 12),
                   SettingContainer(
                     title: 'Notifications',

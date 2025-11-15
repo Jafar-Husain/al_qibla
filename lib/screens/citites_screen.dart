@@ -302,6 +302,7 @@ class CityExpansionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     DateFormat customDateFormat =
         Provider.of<AppProvider>(context).getTimeFormat24()
             ? DateFormat('HH:mm')
@@ -394,14 +395,14 @@ class CityExpansionTile extends StatelessWidget {
                 ),
                 Text(
                   customDateFormat.format(toCity(prayerTimeList[index])),
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
                 ),
                 SizedBox(
                   width: 15,
                 ),
                 Text(
                   Provider.of<AppProvider>(context).prayerNames[index],
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
                 ),
               ],
             );

@@ -5,6 +5,7 @@ import 'package:al_qibla/screens/citites_screen.dart';
 import 'package:al_qibla/screens/missedPrayer_screen.dart';
 import 'package:al_qibla/screens/qibla_screen.dart';
 import 'package:al_qibla/screens/settings_screen.dart';
+import 'package:al_qibla/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart';
@@ -52,82 +53,76 @@ class MainApp extends StatelessWidget {
 
     return ChangeNotifierProvider(
       create: (context) => AppProvider(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue),
-          dialogBackgroundColor: Colors.white,
-          dialogTheme: const DialogThemeData(
-            backgroundColor: Colors.white,
-            titleTextStyle: TextStyle(
-                color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-            contentTextStyle: TextStyle(color: Colors.black),
-          ),
+      child: Consumer<AppProvider>(
+        builder: (context, appProvider, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: appProvider.getIsDarkMode()
+                ? ThemeMode.dark
+                : ThemeMode.light,
 
-          // Define separate input decoration theme for text fields in dialogs
-          inputDecorationTheme: InputDecorationTheme(
-            labelStyle: TextStyle(color: Colors.black87),
-            hintStyle: TextStyle(color: Colors.black54),
-            // Ensure text appears black in text fields
-            filled: true,
-            fillColor: Colors.white,
-          ),
-
-          // Override text selection color for TextField
-          textSelectionTheme: TextSelectionThemeData(
-            cursorColor: Colors.blue,
-            selectionColor: Colors.blue.withOpacity(0.3),
-            selectionHandleColor: Colors.blue,
-          ),
-
-          // Define your custom theme here for app UI (not dialogs)
-          textTheme: const TextTheme(
-            // These styles will apply to app text but not dialog text
-            bodyLarge: TextStyle(color: Colors.white),
-            bodyMedium: TextStyle(color: Colors.white),
-            bodySmall: TextStyle(color: Colors.white),
-          ),
-
-          // We need to explicitly set TextField style
-          textButtonTheme: TextButtonThemeData(
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.blue, // Button text color
-            ),
-          ),
-
-          iconTheme: const IconThemeData(color: Colors.white),
-        ),
-
-        // This is important - it overrides TextField theme specifically
-        // to ensure dialog text fields show black text
-        builder: (context, child) {
-          return Theme(
-            data: Theme.of(context).copyWith(
-              // Ensure TextField uses black text regardless of parent theme
-              textTheme: Theme.of(context).textTheme.copyWith(
-                    // This specifically targets TextField input
-                    titleMedium: TextStyle(color: Colors.black),
+            // This is important - it overrides TextField theme specifically
+            // to ensure dialog text fields show black text
+            builder: (context, child) {
+              final isDark = Theme.of(context).brightness == Brightness.dark;
+              return Theme(
+                data: Theme.of(context).copyWith(
+                  dialogBackgroundColor: isDark ? const Color(0xFF2F3E3C) : Colors.white,
+                  dialogTheme: DialogThemeData(
+                    backgroundColor: isDark ? const Color(0xFF2F3E3C) : Colors.white,
+                    titleTextStyle: TextStyle(
+                        color: isDark ? Colors.white : Colors.black,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                    contentTextStyle: TextStyle(
+                        color: isDark ? Colors.white70 : Colors.black),
                   ),
-            ),
-            child: child!,
+                  inputDecorationTheme: InputDecorationTheme(
+                    labelStyle: TextStyle(color: isDark ? Colors.white70 : Colors.black87),
+                    hintStyle: TextStyle(color: isDark ? Colors.white38 : Colors.black54),
+                    filled: true,
+                    fillColor: isDark ? const Color(0xFF384A48) : Colors.white,
+                  ),
+                  textSelectionTheme: TextSelectionThemeData(
+                    cursorColor: isDark ? AppTheme.darkPrimaryColor : Colors.blue,
+                    selectionColor: isDark
+                        ? AppTheme.darkPrimaryColor.withOpacity(0.3)
+                        : Colors.blue.withOpacity(0.3),
+                    selectionHandleColor: isDark ? AppTheme.darkPrimaryColor : Colors.blue,
+                  ),
+                  textButtonTheme: TextButtonThemeData(
+                    style: TextButton.styleFrom(
+                      foregroundColor: isDark ? AppTheme.darkPrimaryColor : Colors.blue,
+                    ),
+                  ),
+                  // Ensure TextField uses appropriate text color
+                  textTheme: Theme.of(context).textTheme.copyWith(
+                        titleMedium: TextStyle(color: isDark ? Colors.white : Colors.black),
+                      ),
+                ),
+                child: child!,
+              );
+            },
+
+            routes: {
+              '/homeScreen  ': (context) => const NewHomeScreen(),
+              '/settingScreen': (context) => const SettingScreen(),
+              '/qiblaScreen': (context) => const QiblaScreen(),
+              '/citiesScreen': (context) => const CitiesScreen(),
+              '/calendarScreen': (context) => CalendarScreen(
+                    latitude: Provider.of<AppProvider>(context, listen: false)
+                        .getLatitude(),
+                    longitude: Provider.of<AppProvider>(context, listen: false)
+                        .getLongitude(),
+                    local: true,
+                  ),
+              '/missedPrayerScreen': (context) => const MissedPrayerScreen()
+            },
+            home: const NewHomeScreen(),
           );
         },
-
-        routes: {
-          '/homeScreen  ': (context) => const NewHomeScreen(),
-          '/settingScreen': (context) => const SettingScreen(),
-          '/qiblaScreen': (context) => const QiblaScreen(),
-          '/citiesScreen': (context) => const CitiesScreen(),
-          '/calendarScreen': (context) => CalendarScreen(
-                latitude: Provider.of<AppProvider>(context, listen: false)
-                    .getLatitude(),
-                longitude: Provider.of<AppProvider>(context, listen: false)
-                    .getLongitude(),
-                local: true,
-              ),
-          '/missedPrayerScreen': (context) => const MissedPrayerScreen()
-        },
-        home: const NewHomeScreen(),
       ),
     );
   }

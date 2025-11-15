@@ -127,6 +127,7 @@ class AppProvider extends ChangeNotifier {
   Widget currentSVG = const moonImage();
   FixedExtentScrollController scrollController = FixedExtentScrollController();
   bool _timeFormat24 = true; // modified removed late testing!
+  bool _isDarkMode = false;
   List<String> _myCities = [];
   List<City> _myCityCities = [];
   late int _fajrMissed;
@@ -292,6 +293,10 @@ class AppProvider extends ChangeNotifier {
     return _timeFormat24;
   }
 
+  bool getIsDarkMode() {
+    return _isDarkMode;
+  }
+
   double getLatitude() {
     return _latitude;
   }
@@ -445,6 +450,15 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setDarkMode(bool isDarkMode) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool("isDarkMode", isDarkMode);
+
+    _isDarkMode = isDarkMode;
+
+    notifyListeners();
+  }
+
   void setHighLatitudeRule(String highLatitudeRule) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("highLatitudeRule", highLatitudeRule);
@@ -493,6 +507,7 @@ class AppProvider extends ChangeNotifier {
     _highLatitudeRule = prefs.getString("highLatitudeRule")!;
     _cityName = prefs.getString("cityName")!;
     _timeFormat24 = prefs.getBool("timeFormat24")!;
+    _isDarkMode = prefs.getBool("isDarkMode") ?? false;
 
     notifyListeners();
   }
@@ -1020,6 +1035,10 @@ class AppProvider extends ChangeNotifier {
     if (!prefs.containsKey('timeFormat24')) {
       setTimeFormat(true);
       print("setting default");
+    }
+
+    if (!prefs.containsKey('isDarkMode')) {
+      setDarkMode(false);
     }
 
     if (!prefs.containsKey('myCities2')) {
