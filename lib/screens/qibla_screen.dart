@@ -118,7 +118,9 @@ class _QiblaScreenState extends State<QiblaScreen> {
                     Text(
                       "Accuracy is $accuracyStatus",
                       style: TextStyle(color: accuracyColor),
+                      // Reserve space for nav bar
                     ),
+                    const SizedBox(height: 100),
                   ],
                 ),
                 Positioned(

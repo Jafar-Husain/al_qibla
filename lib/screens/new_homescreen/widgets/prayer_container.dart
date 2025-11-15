@@ -20,7 +20,7 @@ class PrayerContainer extends StatelessWidget {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
         color: isCurrentPrayer
             ? (isDarkMode
@@ -52,6 +52,8 @@ class PrayerContainer extends StatelessWidget {
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   prayerTime,
@@ -60,6 +62,8 @@ class PrayerContainer extends StatelessWidget {
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

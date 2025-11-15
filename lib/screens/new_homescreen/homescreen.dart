@@ -84,49 +84,68 @@ class _NewHomeScreenState extends State<NewHomeScreen>
       return next == name.toLowerCase();
     }
 
+    const double tileHeight = 108;
+    if (times.isEmpty) {
+      return Column(
+        children: const [
+          SizedBox(height: 40),
+          Center(child: CircularProgressIndicator()),
+          SizedBox(height: 100),
+        ],
+      );
+    }
     return Column(
       children: [
-        if (times.isEmpty) ...[
-          const Expanded(child: Center(child: CircularProgressIndicator()))
-        ] else ...[
-          Expanded(
-            child: PrayerContainer(
-              prayerName: 'Fajr',
-              prayerTime: fmt(0),
-              isCurrentPrayer: isNext('fajr'),
-            ),
+        SizedBox(
+          height: tileHeight,
+          child: PrayerContainer(
+            prayerName: 'Fajr',
+            prayerTime: fmt(0),
+            isCurrentPrayer: isNext('fajr'),
           ),
-          Expanded(
-            child: PrayerContainer(
-              prayerName: 'Dhuhr',
-              prayerTime: fmt(2),
-              isCurrentPrayer: isNext('dhuhr'),
-            ),
+        ),
+        SizedBox(
+          height: tileHeight,
+          child: PrayerContainer(
+            prayerName: 'Sunrise',
+            prayerTime: fmt(1),
+            isCurrentPrayer: isNext('sunrise'),
           ),
-          Expanded(
-            child: PrayerContainer(
-              prayerName: 'Asr',
-              prayerTime: fmt(3),
-              isCurrentPrayer: isNext('asr'),
-            ),
+        ),
+        SizedBox(
+          height: tileHeight,
+          child: PrayerContainer(
+            prayerName: 'Dhuhr',
+            prayerTime: fmt(2),
+            isCurrentPrayer: isNext('dhuhr'),
           ),
-          Expanded(
-            child: PrayerContainer(
-              prayerName: 'Maghrib',
-              prayerTime: fmt(4),
-              isCurrentPrayer: isNext('maghrib'),
-            ),
+        ),
+        SizedBox(
+          height: tileHeight,
+          child: PrayerContainer(
+            prayerName: 'Asr',
+            prayerTime: fmt(3),
+            isCurrentPrayer: isNext('asr'),
           ),
-          Expanded(
-            child: PrayerContainer(
-              prayerName: 'Isha',
-              prayerTime: fmt(5),
-              isCurrentPrayer: isNext('isha'),
-            ),
+        ),
+        SizedBox(
+          height: tileHeight,
+          child: PrayerContainer(
+            prayerName: 'Maghrib',
+            prayerTime: fmt(4),
+            isCurrentPrayer: isNext('maghrib'),
           ),
-        ],
+        ),
+        SizedBox(
+          height: tileHeight,
+          child: PrayerContainer(
+            prayerName: 'Isha',
+            prayerTime: fmt(5),
+            isCurrentPrayer: isNext('isha'),
+          ),
+        ),
         // Reserve space for nav bar
-        const SizedBox(height: 16),
+        const SizedBox(height: 100),
       ],
     );
   }
@@ -134,39 +153,38 @@ class _NewHomeScreenState extends State<NewHomeScreen>
   Widget _buildPlaceholderContent(String title, bool isDarkMode) {
     return Column(
       children: [
-        Expanded(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.construction,
-                  size: 64,
-                  color: isDarkMode ? Colors.white30 : Colors.black26,
+        const SizedBox(height: 40),
+        Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.construction,
+                size: 64,
+                color: isDarkMode ? Colors.white30 : Colors.black26,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                '$title Coming Soon',
+                style: TextStyle(
+                  color: isDarkMode ? Colors.white70 : Colors.black54,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  '$title Coming Soon',
-                  style: TextStyle(
-                    color: isDarkMode ? Colors.white70 : Colors.black54,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                  ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'This feature is under development',
+                style: TextStyle(
+                  color: isDarkMode ? Colors.white54 : Colors.black38,
+                  fontSize: 14,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'This feature is under development',
-                  style: TextStyle(
-                    color: isDarkMode ? Colors.white54 : Colors.black38,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
         // Reserve space for nav bar
-        Container(height: 110, color: Colors.transparent),
+        const SizedBox(height: 100),
       ],
     );
   }
@@ -194,34 +212,31 @@ class _NewHomeScreenState extends State<NewHomeScreen>
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(top: 5),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            // Fixed height content at top
-                            if (_selectedTab == HomeMenuTab.prayerTimes) ...[
-                              HomeTopInfo(isDarkMode: isDarkMode),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              if (_selectedTab == HomeMenuTab.prayerTimes) ...[
+                                HomeTopInfo(isDarkMode: isDarkMode),
+                                const SizedBox(height: 10),
+                              ],
+                              HomeMenuButtonRow(
+                                isDarkMode: isDarkMode,
+                                selectedTab: _selectedTab,
+                                onTabSelected: (HomeMenuTab tab) {
+                                  setState(() {
+                                    _selectedTab = tab;
+                                  });
+                                },
+                              ),
                               const SizedBox(height: 10),
-                            ],
-                            HomeMenuButtonRow(
-                              isDarkMode: isDarkMode,
-                              selectedTab: _selectedTab,
-                              onTabSelected: (HomeMenuTab tab) {
-                                setState(() {
-                                  _selectedTab = tab;
-                                });
-                              },
-                            ),
-                            const SizedBox(height: 10),
-
-                            // Content based on selected tab
-                            Expanded(
-                              child: _buildTabContent(
+                              _buildTabContent(
                                 appProvider,
                                 isDarkMode,
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),

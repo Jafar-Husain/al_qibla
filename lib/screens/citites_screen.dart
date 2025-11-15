@@ -181,72 +181,68 @@ class CitiesScreen extends StatelessWidget {
           ),
           body: Stack(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 100),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: Provider.of<AppProvider>(context)
-                              .myCityCities()
-                              .length,
-                          itemBuilder: (context, index) {
-                            List<City> cityLi =
-                                Provider.of<AppProvider>(context)
-                                    .myCityCities();
-                            return Column(
-                              children: [
-                                Dismissible(
-                                  key: Key(cityLi[index].latitude.toString() +
-                                      cityLi[index].longitude.toString()),
-                                  onDismissed:
-                                      (DismissDirection direction) async {
-                                    await Provider.of<AppProvider>(context,
-                                            listen: false)
-                                        .removeMyCities(index);
-                                    await Provider.of<AppProvider>(context,
-                                            listen: false)
-                                        .getMyCitiesList();
+              SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: Provider.of<AppProvider>(context)
+                            .myCityCities()
+                            .length,
+                        itemBuilder: (context, index) {
+                          List<City> cityLi =
+                              Provider.of<AppProvider>(context).myCityCities();
+                          return Column(
+                            children: [
+                              Dismissible(
+                                key: Key(cityLi[index].latitude.toString() +
+                                    cityLi[index].longitude.toString()),
+                                onDismissed:
+                                    (DismissDirection direction) async {
+                                  await Provider.of<AppProvider>(context,
+                                          listen: false)
+                                      .removeMyCities(index);
+                                  await Provider.of<AppProvider>(context,
+                                          listen: false)
+                                      .getMyCitiesList();
 
-                                    await Provider.of<AppProvider>(context,
-                                            listen: false)
-                                        .setMyCityCities();
-                                  },
-                                  background: Container(
-                                    padding: EdgeInsets.only(right: 20),
-                                    alignment: Alignment.centerRight,
-                                    color: Colors.red,
-                                    child: Icon(
-                                      Icons.delete,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  child: CityExpansionTile(
-                                    cityName: cityLi[index].cityName,
-                                    timeDiff: cityLi[index].timeDifference,
-                                    nextPrayerName:
-                                        cityLi[index].nextPrayerName,
-                                    nextPrayerTime:
-                                        cityLi[index].nextPrayerTime,
-                                    prayerTimeList: cityLi[index].prayerTimes,
-                                    latitude: cityLi[index].latitude,
-                                    longitude: cityLi[index].longitude,
+                                  await Provider.of<AppProvider>(context,
+                                          listen: false)
+                                      .setMyCityCities();
+                                },
+                                background: Container(
+                                  padding: EdgeInsets.only(right: 20),
+                                  alignment: Alignment.centerRight,
+                                  color: Colors.red,
+                                  child: Icon(
+                                    Icons.delete,
+                                    color: Colors.white,
                                   ),
                                 ),
-                                Divider(
-                                  thickness: 2,
+                                child: CityExpansionTile(
+                                  cityName: cityLi[index].cityName,
+                                  timeDiff: cityLi[index].timeDifference,
+                                  nextPrayerName: cityLi[index].nextPrayerName,
+                                  nextPrayerTime: cityLi[index].nextPrayerTime,
+                                  prayerTimeList: cityLi[index].prayerTimes,
+                                  latitude: cityLi[index].latitude,
+                                  longitude: cityLi[index].longitude,
                                 ),
-                              ],
-                            );
-                          },
-                        )
-                      ],
-                    ),
+                              ),
+                              Divider(
+                                thickness: 2,
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                      // Reserve space for nav bar
+                      const SizedBox(height: 100),
+                    ],
                   ),
                 ),
               ),

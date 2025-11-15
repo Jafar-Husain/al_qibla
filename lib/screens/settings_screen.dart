@@ -388,6 +388,8 @@ class _SettingScreenState extends State<SettingScreen> {
                         // Add any action you want when the ListTile is tapped
                       },
                     ),
+                    // Reserve space for nav bar
+                    const SizedBox(height: 100),
                   ],
                 ),
               ),

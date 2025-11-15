@@ -87,12 +87,11 @@ class _HomeTopInfoState extends State<HomeTopInfo> {
             if (next == null) return '--:--';
             Duration d = next.difference(now);
             if (d.isNegative) d = Duration.zero;
-            final hours = d.inHours;
-            final minutes = d.inMinutes % 60;
-            if (hours > 0) {
-              return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
-            }
-            return '${minutes.toString().padLeft(2, '0')}';
+            final totalMinutes = d.inMinutes;
+            final hours = totalMinutes ~/ 60;
+            final minutes = totalMinutes % 60;
+            // Always show HH:MM, no seconds
+            return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
           } catch (_) {
             return '--:--';
           }
