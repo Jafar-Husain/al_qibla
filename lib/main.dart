@@ -1,6 +1,6 @@
 import 'package:al_qibla/class/notifications_api.dart';
 import 'package:al_qibla/provider/app_provider.dart';
-import 'package:al_qibla/screens/calendar_screen.dart';
+import 'package:al_qibla/screens/new_calendar_screen.dart';
 import 'package:al_qibla/screens/citites_screen.dart';
 import 'package:al_qibla/screens/missedPrayer_screen.dart';
 import 'package:al_qibla/screens/qibla_screen.dart';
@@ -111,7 +111,7 @@ class MainApp extends StatelessWidget {
               '/settingScreen': (context) => const SettingScreen(),
               '/qiblaScreen': (context) => const QiblaScreen(),
               '/citiesScreen': (context) => const CitiesScreen(),
-              '/calendarScreen': (context) => CalendarScreen(
+              '/calendarScreen': (context) => NewCalendarScreen(
                     latitude: Provider.of<AppProvider>(context, listen: false)
                         .getLatitude(),
                     longitude: Provider.of<AppProvider>(context, listen: false)

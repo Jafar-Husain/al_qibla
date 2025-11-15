@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:al_qibla/class/city_class.dart';
 import 'package:al_qibla/class/sting_extension.dart';
 import 'package:al_qibla/provider/app_provider.dart';
-import 'package:al_qibla/screens/calendar_screen.dart';
+import 'package:al_qibla/screens/new_calendar_screen.dart';
 import 'package:al_qibla/widgets/custom_app_bar.dart';
 import 'package:al_qibla/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -25,15 +25,29 @@ class CitiesScreen extends StatefulWidget {
 }
 
 class _CitiesScreenState extends State<CitiesScreen> {
+  bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
     // Ensure cities list is loaded/refreshed when entering screen
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final app = Provider.of<AppProvider>(context, listen: false);
-      await app.getMyCitiesList();
-      await app.setMyCityCities();
+    _loadCities();
+  }
+
+  Future<void> _loadCities() async {
+    setState(() {
+      _isLoading = true;
     });
+
+    final app = Provider.of<AppProvider>(context, listen: false);
+    await app.getMyCitiesList();
+    await app.setMyCityCities();
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -207,67 +221,79 @@ class _CitiesScreenState extends State<CitiesScreen> {
           ),
           body: SafeArea(
             bottom: false,
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: Provider.of<AppProvider>(context)
-                          .myCityCities()
-                          .length,
-                      itemBuilder: (context, index) {
-                        List<City> cityLi =
-                            Provider.of<AppProvider>(context).myCityCities();
-                        return Column(
-                          children: [
-                            Dismissible(
-                              key: Key(cityLi[index].latitude.toString() +
-                                  cityLi[index].longitude.toString()),
-                              onDismissed: (DismissDirection direction) async {
-                                await Provider.of<AppProvider>(context,
-                                        listen: false)
-                                    .removeMyCities(index);
-                                await Provider.of<AppProvider>(context,
-                                        listen: false)
-                                    .getMyCitiesList();
-
-                                await Provider.of<AppProvider>(context,
-                                        listen: false)
-                                    .setMyCityCities();
-                              },
-                              background: Container(
-                                padding: EdgeInsets.only(right: 20),
-                                alignment: Alignment.centerRight,
-                                color: Colors.red,
-                                child: Icon(
-                                  Icons.delete,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              child: CityExpansionTile(
-                                cityName: cityLi[index].cityName,
-                                timeDiff: cityLi[index].timeDifference,
-                                nextPrayerName: cityLi[index].nextPrayerName,
-                                nextPrayerTime: cityLi[index].nextPrayerTime,
-                                prayerTimeList: cityLi[index].prayerTimes,
-                                latitude: cityLi[index].latitude,
-                                longitude: cityLi[index].longitude,
-                              ),
-                            ),
-                            SizedBox(height: 12),
-                          ],
-                        );
-                      },
+            child: _isLoading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.darkPrimaryColor
+                          : AppTheme.primaryColor,
                     ),
-                    const SizedBox(height: 24),
-                  ],
-                ),
-              ),
-            ),
+                  )
+                : SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: Provider.of<AppProvider>(context)
+                                .myCityCities()
+                                .length,
+                            itemBuilder: (context, index) {
+                              List<City> cityLi =
+                                  Provider.of<AppProvider>(context)
+                                      .myCityCities();
+                              return Column(
+                                children: [
+                                  Dismissible(
+                                    key: Key(cityLi[index].latitude.toString() +
+                                        cityLi[index].longitude.toString()),
+                                    onDismissed:
+                                        (DismissDirection direction) async {
+                                      await Provider.of<AppProvider>(context,
+                                              listen: false)
+                                          .removeMyCities(index);
+                                      await Provider.of<AppProvider>(context,
+                                              listen: false)
+                                          .getMyCitiesList();
+
+                                      await Provider.of<AppProvider>(context,
+                                              listen: false)
+                                          .setMyCityCities();
+                                    },
+                                    background: Container(
+                                      padding: EdgeInsets.only(right: 20),
+                                      alignment: Alignment.centerRight,
+                                      color: Colors.red,
+                                      child: Icon(
+                                        Icons.delete,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    child: CityExpansionTile(
+                                      cityName: cityLi[index].cityName,
+                                      timeDiff: cityLi[index].timeDifference,
+                                      nextPrayerName:
+                                          cityLi[index].nextPrayerName,
+                                      nextPrayerTime:
+                                          cityLi[index].nextPrayerTime,
+                                      prayerTimeList: cityLi[index].prayerTimes,
+                                      latitude: cityLi[index].latitude,
+                                      longitude: cityLi[index].longitude,
+                                    ),
+                                  ),
+                                  SizedBox(height: 12),
+                                ],
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+                      ),
+                    ),
+                  ),
           ),
           bottomNavigationBar: const SafeArea(
             top: false,
@@ -365,10 +391,11 @@ class CityExpansionTile extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => CalendarScreen(
+                        builder: (context) => NewCalendarScreen(
                             latitude: latitude,
                             longitude: longitude,
-                            local: false)),
+                            local: false,
+                            cityName: cityName)),
                   );
                 },
                 icon: Icon(Icons.calendar_month),
