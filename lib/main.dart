@@ -2,16 +2,15 @@ import 'package:al_qibla/class/notifications_api.dart';
 import 'package:al_qibla/provider/app_provider.dart';
 import 'package:al_qibla/screens/calendar_screen.dart';
 import 'package:al_qibla/screens/citites_screen.dart';
-import 'package:al_qibla/screens/home_screen.dart';
 import 'package:al_qibla/screens/missedPrayer_screen.dart';
 import 'package:al_qibla/screens/qibla_screen.dart';
 import 'package:al_qibla/screens/settings_screen.dart';
-import 'package:al_qibla/workmanager/workmanager_function.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:workmanager/workmanager.dart';
+import 'package:al_qibla/screens/new_homescreen/homescreen.dart';
 
 @pragma(
     'vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
@@ -115,7 +114,7 @@ class MainApp extends StatelessWidget {
         },
 
         routes: {
-          '/homeScreen  ': (context) => const HomeScreen(),
+          '/homeScreen  ': (context) => const NewHomeScreen(),
           '/settingScreen': (context) => const SettingScreen(),
           '/qiblaScreen': (context) => const QiblaScreen(),
           '/citiesScreen': (context) => const CitiesScreen(),
@@ -128,7 +127,7 @@ class MainApp extends StatelessWidget {
               ),
           '/missedPrayerScreen': (context) => const MissedPrayerScreen()
         },
-        home: const HomeScreen(),
+        home: const NewHomeScreen(),
       ),
     );
   }

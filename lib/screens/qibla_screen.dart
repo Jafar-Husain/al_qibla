@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
+import 'package:al_qibla/widgets/navbar.dart';
 
 class QiblaScreen extends StatefulWidget {
   const QiblaScreen({super.key});
@@ -81,40 +82,56 @@ class _QiblaScreenState extends State<QiblaScreen> {
               foregroundColor: Colors.white,
             ),
             backgroundColor: Colors.black,
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
+            body: Stack(
               children: [
-                Text(
-                  "${heading.ceil() > 0 ? heading.ceil() : 360 + heading.ceil()}°",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "${heading.ceil() > 0 ? heading.ceil() : 360 + heading.ceil()}°",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30),
+                    ),
+                    SizedBox(
+                      height: 40,
+                    ),
+                    Align(
+                      alignment: const Alignment(0, -0.2),
+                      child: CompassView(
+                        bearing: _bearing,
+                        heading: heading,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                    ),
+                    Text(
+                      "Qibla is ${_bearing!.ceil()}°",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      "Accuracy is $accuracyStatus",
+                      style: TextStyle(color: accuracyColor),
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  height: 40,
-                ),
-                Align(
-                  alignment: const Alignment(0, -0.2),
-                  child: CompassView(
-                    bearing: _bearing,
-                    heading: heading,
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: SafeArea(
+                    top: false,
+                    child: const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: BottomNavigationWidget(selectedIndex: 0),
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: 50,
-                ),
-                Text(
-                  "Qibla is ${_bearing!.ceil()}°",
-                  style: TextStyle(color: Colors.white),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  "Accuracy is $accuracyStatus",
-                  style: TextStyle(color: accuracyColor),
                 ),
               ],
             ),
