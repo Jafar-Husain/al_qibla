@@ -99,7 +99,7 @@ class _NewHomeScreenState extends State<NewHomeScreen>
     }
     // Only the list scrolls
     return ListView(
-      padding: const EdgeInsets.only(bottom: 100),
+      padding: const EdgeInsets.only(bottom: 140),
       children: [
         SizedBox(
           height: tileHeight,
