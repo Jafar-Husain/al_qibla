@@ -119,11 +119,11 @@ class AppProvider extends ChangeNotifier {
   var currentFirstGrad = const Color(0xff100e2a);
   var currentSecondGrad = const Color(0xff2e2855);
   var currentMosqueColor = Colors.black;
-  late List prayerTimesList;
+  List prayerTimesList = [];
   var nextPrayerTime = DateTime(
       DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0);
-  late var nextPrayerName;
-  late var currentPrayerName;
+  String? nextPrayerName;
+  String? currentPrayerName;
   Widget currentSVG = const moonImage();
   FixedExtentScrollController scrollController = FixedExtentScrollController();
   bool _timeFormat24 = true; // modified removed late testing!
@@ -591,9 +591,9 @@ class AppProvider extends ChangeNotifier {
     params.madhab = _stringToMadhab(madhab);
     params.highLatitudeRule = _stringToHighLatitudeRule(highLatitudeRule);
 
-    // Use UTC to avoid DST issues
-    final nowUtc = date.toUtc();
-    final targetDateUtc = DateTime.utc(nowUtc.year, nowUtc.month, nowUtc.day);
+    // Use the local date components directly to avoid timezone shifting
+    // This ensures the correct date is used for prayer time calculations
+    final targetDateUtc = DateTime.utc(date.year, date.month, date.day);
 
     PrayerTimes prayerTimes = PrayerTimes(
         date: targetDateUtc,

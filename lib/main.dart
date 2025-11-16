@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:al_qibla/class/notifications_api.dart';
 import 'package:al_qibla/provider/app_provider.dart';
 import 'package:al_qibla/screens/new_calendar_screen.dart';
@@ -6,6 +7,7 @@ import 'package:al_qibla/screens/missedPrayer_screen.dart';
 import 'package:al_qibla/screens/qibla_screen.dart';
 import 'package:al_qibla/screens/settings_screen.dart';
 import 'package:al_qibla/app_theme.dart';
+import 'package:al_qibla/workmanager/workmanager_function.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart';
@@ -16,11 +18,15 @@ import 'package:al_qibla/screens/new_homescreen/homescreen.dart';
 @pragma(
     'vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
 void callbackDispatcher() {
-  Workmanager().executeTask((task, inputData) {
+  Workmanager().executeTask((task, inputData) async {
     // This is the method that will be called when the task is executed.
-    //updateWidget();
-    //simpleTask will be emitted here.
-    return Future.value(true);
+    try {
+      await updateWidget();
+      return Future.value(true);
+    } catch (e) {
+      print('Error updating widget: $e');
+      return Future.value(false);
+    }
   });
 }
 
@@ -36,8 +42,26 @@ void main() async {
     // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
   );
 
-  Workmanager().registerOneOffTask("task-identifier", "simpleTask",
-      initialDelay: Duration(seconds: 10));
+  // Register background task to update widgets
+  // Note: iOS does not support periodic tasks, so we register a one-off task
+  // On iOS, widgets should calculate prayer times natively in Swift
+  // On Android, we use a periodic task to keep widgets updated
+  if (Platform.isAndroid) {
+    Workmanager().registerPeriodicTask(
+      "widget-update-task",
+      "widgetUpdate",
+      frequency: Duration(minutes: 15),
+      initialDelay: Duration(seconds: 10),
+    );
+  } else if (Platform.isIOS) {
+    // On iOS, register a one-off task to update widget data once at app launch
+    // iOS widgets will handle their own refresh via TimelineProvider
+    Workmanager().registerOneOffTask(
+      "widget-update-task",
+      "widgetUpdate",
+      initialDelay: Duration(seconds: 5),
+    );
+  }
 
   runApp(const MainApp());
 }

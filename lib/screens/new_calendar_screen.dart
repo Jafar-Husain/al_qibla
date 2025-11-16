@@ -206,7 +206,7 @@ class _NewCalendarScreenState extends State<NewCalendarScreen> {
         // Weekday headers
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+          children: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
               .map((day) => Expanded(
                     child: Center(
                       child: Text(

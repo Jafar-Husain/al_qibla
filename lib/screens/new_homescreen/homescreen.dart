@@ -488,7 +488,7 @@ class _NewHomeScreenState extends State<NewHomeScreen>
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+          children: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
               .map((day) => Expanded(
                     child: Center(
                       child: Text(

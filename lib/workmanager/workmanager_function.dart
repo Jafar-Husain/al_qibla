@@ -57,8 +57,9 @@ Future<PrayerTimes> calculatePrayerTimes(
   CalculationParameters params = method;
   params.madhab = _stringToMadhab(madhab);
   params.highLatitudeRule = _stringToHighLatitudeRule(highLatitudeRule);
-  final nowUtc = date.toUtc();
-  final targetDateUtc = DateTime.utc(nowUtc.year, nowUtc.month, nowUtc.day);
+  // Use the local date components directly to avoid timezone shifting
+  // This ensures the correct date is used for prayer time calculations
+  final targetDateUtc = DateTime.utc(date.year, date.month, date.day);
   PrayerTimes prayerTimes = PrayerTimes(
     date: targetDateUtc,
     coordinates: coordinates,
