@@ -271,13 +271,11 @@ class _SettingScreenState extends State<SettingScreen> {
                   const SizedBox(height: 16),
                   SettingContainer(
                     title: 'Dark Theme',
-                    subtitle:
-                        Provider.of<AppProvider>(context).getIsDarkMode()
-                            ? 'Enabled'
-                            : 'Disabled',
+                    subtitle: Provider.of<AppProvider>(context).getIsDarkMode()
+                        ? 'Enabled'
+                        : 'Disabled',
                     trailing: ToggleSwitch(
-                      value:
-                          Provider.of<AppProvider>(context).getIsDarkMode(),
+                      value: Provider.of<AppProvider>(context).getIsDarkMode(),
                       onChanged: (value) {
                         Provider.of<AppProvider>(context, listen: false)
                             .setDarkMode(value);
