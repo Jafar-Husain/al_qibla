@@ -128,6 +128,7 @@ class AppProvider extends ChangeNotifier {
   FixedExtentScrollController scrollController = FixedExtentScrollController();
   bool _timeFormat24 = true; // modified removed late testing!
   bool _isDarkMode = false;
+  bool _isManualLocation = false; // Track if location was manually set
   List<String> _myCities = [];
   List<City> _myCityCities = [];
   late int _fajrMissed;
@@ -497,6 +498,45 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Sets location manually from a selected city
+  Future<void> setManualLocation({
+    required double latitude,
+    required double longitude,
+    required String cityName,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Save coordinates and mark as manual location
+    await prefs.setDouble('latitude', latitude);
+    await prefs.setDouble('longitude', longitude);
+    await prefs.setString('cityName', cityName);
+    await prefs.setBool('isManualLocation', true);
+
+    // Update internal state
+    _latitude = latitude;
+    _longitude = longitude;
+    _cityName = cityName;
+    _isManualLocation = true;
+
+    notifyListeners();
+
+    // Recalculate prayer times with new location (without GPS refresh)
+    await getPrayerTimes(refresh: false, init: true);
+  }
+
+  /// Clears manual location and uses GPS again
+  Future<void> clearManualLocation() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isManualLocation', false);
+    _isManualLocation = false;
+    notifyListeners();
+
+    // Refresh with GPS
+    await getPrayerTimes(refresh: true);
+  }
+
+  bool get isManualLocation => _isManualLocation;
+
   Future getAllSharedPref() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -508,6 +548,7 @@ class AppProvider extends ChangeNotifier {
     _cityName = prefs.getString("cityName")!;
     _timeFormat24 = prefs.getBool("timeFormat24")!;
     _isDarkMode = prefs.getBool("isDarkMode") ?? false;
+    _isManualLocation = prefs.getBool("isManualLocation") ?? false;
 
     notifyListeners();
   }
@@ -912,32 +953,10 @@ class AppProvider extends ChangeNotifier {
     if (refresh) {
       // Refresh prayer times
       print("deter 1");
-      try {
-        Position position = await determinePosition();
 
-        await setLongitutde(position.longitude);
-        await setLatitude(position.latitude);
-        await setCityName(position.longitude, position.latitude);
-
-        prayerTimes = await calculatePrayerTimes(
-          position.latitude,
-          position.longitude,
-          _method,
-          _madhab,
-          _highLatitudeRule,
-          DateTime.now(),
-        );
-        await handlePrayerTimes(prayerTimes);
-
-        animateScrollController();
-
-        final List<DateTime> next10DaysPrayerTimes =
-            await getNext10DaysPrayerTimes();
-        await schedulePrayerNotifications(next10DaysPrayerTimes);
-      } catch (e) {
-        // Location services are off or failed, use saved location data
-        print("Location services unavailable, using saved location: $e");
-
+      // If manual location is set, don't use GPS - use saved location
+      if (_isManualLocation) {
+        print("Using manual location, skipping GPS");
         prayerTimes = await calculatePrayerTimes(
           _latitude,
           _longitude,
@@ -953,6 +972,50 @@ class AppProvider extends ChangeNotifier {
         final List<DateTime> next10DaysPrayerTimes =
             await getNext10DaysPrayerTimes();
         await schedulePrayerNotifications(next10DaysPrayerTimes);
+      } else {
+        // Use GPS location
+        try {
+          Position position = await determinePosition();
+
+          await setLongitutde(position.longitude);
+          await setLatitude(position.latitude);
+          await setCityName(position.longitude, position.latitude);
+
+          prayerTimes = await calculatePrayerTimes(
+            position.latitude,
+            position.longitude,
+            _method,
+            _madhab,
+            _highLatitudeRule,
+            DateTime.now(),
+          );
+          await handlePrayerTimes(prayerTimes);
+
+          animateScrollController();
+
+          final List<DateTime> next10DaysPrayerTimes =
+              await getNext10DaysPrayerTimes();
+          await schedulePrayerNotifications(next10DaysPrayerTimes);
+        } catch (e) {
+          // Location services are off or failed, use saved location data
+          print("Location services unavailable, using saved location: $e");
+
+          prayerTimes = await calculatePrayerTimes(
+            _latitude,
+            _longitude,
+            _method,
+            _madhab,
+            _highLatitudeRule,
+            DateTime.now(),
+          );
+          await handlePrayerTimes(prayerTimes);
+
+          animateScrollController();
+
+          final List<DateTime> next10DaysPrayerTimes =
+              await getNext10DaysPrayerTimes();
+          await schedulePrayerNotifications(next10DaysPrayerTimes);
+        }
       }
     }
 

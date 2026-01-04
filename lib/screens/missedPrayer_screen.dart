@@ -1,7 +1,6 @@
 import 'package:al_qibla/provider/app_provider.dart';
 import 'package:al_qibla/widgets/missed_prayer_container.dart';
 import 'package:al_qibla/widgets/custom_app_bar.dart';
-import 'package:al_qibla/widgets/home_drawer.dart';
 import 'package:al_qibla/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,7 +16,6 @@ class MissedPrayerScreen extends StatelessWidget {
         statusBarColor: Colors.transparent,
       ),
       child: Scaffold(
-        drawer: const HomeDrawer(selectedIndex: 3),
         backgroundColor: AppTheme.getCurrentBackgroundColor(
             Theme.of(context).brightness == Brightness.dark),
         appBar: CustomAppBar(
@@ -26,8 +24,7 @@ class MissedPrayerScreen extends StatelessWidget {
           foregroundColor: Theme.of(context).brightness == Brightness.dark
               ? Colors.white
               : AppTheme.primaryColor,
-          showBackButton: false,
-          showMenuButton: true,
+          showBackButton: true,
         ),
         body: ListView(
           padding: EdgeInsets.fromLTRB(20, 30, 20, 20), // Added bottom padding

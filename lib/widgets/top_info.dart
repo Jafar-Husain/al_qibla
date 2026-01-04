@@ -109,7 +109,7 @@ class _topInfoState extends State<topInfo> {
                       ),
                     ),
                     InkWell(
-                      child: const Icon(Icons.refresh_rounded,
+                      child: const Icon(Icons.location_on_rounded,
                           color: Colors.white),
                       onTap: () async {
                         bool serviceEnabled =
@@ -118,7 +118,8 @@ class _topInfoState extends State<topInfo> {
                           await Geolocator.openLocationSettings();
                           return;
                         }
-                        appProvider.getPrayerTimes(refresh: true);
+                        // Clear manual location so GPS is used
+                        await appProvider.clearManualLocation();
                       },
                     ),
                   ],

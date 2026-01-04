@@ -15,7 +15,6 @@ import 'package:timezone/data/latest.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:lat_lng_to_timezone/lat_lng_to_timezone.dart' as tzmap;
 import 'package:provider/provider.dart';
-import 'package:al_qibla/widgets/home_drawer.dart';
 
 class CitiesScreen extends StatefulWidget {
   const CitiesScreen({super.key});
@@ -64,7 +63,6 @@ class _CitiesScreenState extends State<CitiesScreen> {
           statusBarColor: Colors.transparent,
         ),
         child: Scaffold(
-          drawer: const HomeDrawer(selectedIndex: 4),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
               final cityJson =
@@ -225,8 +223,7 @@ class _CitiesScreenState extends State<CitiesScreen> {
             foregroundColor: Theme.of(context).brightness == Brightness.dark
                 ? Colors.white
                 : AppTheme.primaryColor,
-            showBackButton: false,
-            showMenuButton: true,
+            showBackButton: true,
           ),
           body: SafeArea(
             bottom: false,

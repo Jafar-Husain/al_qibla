@@ -2,7 +2,6 @@ import 'package:adhan_dart/adhan_dart.dart';
 import 'package:al_qibla/provider/app_provider.dart';
 import 'package:al_qibla/widgets/compass_view.dart';
 import 'package:al_qibla/widgets/custom_app_bar.dart';
-import 'package:al_qibla/widgets/home_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:al_qibla/app_theme.dart';
 import 'package:flutter/services.dart';
@@ -73,14 +72,12 @@ class _QiblaScreenState extends State<QiblaScreen> {
           }
 
           return Scaffold(
-            drawer: const HomeDrawer(selectedIndex: 1),
             appBar: CustomAppBar(
               title: "Compass",
               backgroundColor: Colors.transparent,
               foregroundColor:
                   isDarkMode ? Colors.white : AppTheme.primaryColor,
-              showBackButton: false,
-              showMenuButton: true,
+              showBackButton: true,
             ),
             backgroundColor: AppTheme.getCurrentBackgroundColor(isDarkMode),
             body: SafeArea(

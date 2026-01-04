@@ -138,13 +138,9 @@ class HomeDrawer extends StatelessWidget {
 
   void _navigateTo(BuildContext context, Widget screen) {
     Navigator.pop(context); // Close drawer
-    Navigator.pushReplacement(
+    Navigator.push(
       context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation1, animation2) => screen,
-        transitionDuration: Duration.zero,
-        reverseTransitionDuration: Duration.zero,
-      ),
+      MaterialPageRoute(builder: (context) => screen),
     );
   }
 }

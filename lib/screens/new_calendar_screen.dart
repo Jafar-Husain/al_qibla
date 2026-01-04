@@ -4,7 +4,6 @@ import 'package:adhan_dart/adhan_dart.dart';
 import 'package:al_qibla/provider/app_provider.dart';
 import 'package:al_qibla/app_theme.dart';
 import 'package:al_qibla/widgets/custom_app_bar.dart';
-import 'package:al_qibla/widgets/home_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -109,14 +108,12 @@ class _NewCalendarScreenState extends State<NewCalendarScreen> {
         statusBarColor: Colors.transparent,
       ),
       child: Scaffold(
-        drawer: const HomeDrawer(selectedIndex: 2),
         backgroundColor: AppTheme.getCurrentBackgroundColor(isDarkMode),
         appBar: CustomAppBar(
           title: "Calendar",
           backgroundColor: Colors.transparent,
           foregroundColor: isDarkMode ? Colors.white : AppTheme.primaryColor,
-          showBackButton: false,
-          showMenuButton: true,
+          showBackButton: true,
         ),
         body: SafeArea(
           child: _buildCalendarContent(isDarkMode),
