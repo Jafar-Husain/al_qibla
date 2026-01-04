@@ -15,7 +15,7 @@ import 'package:timezone/data/latest.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:lat_lng_to_timezone/lat_lng_to_timezone.dart' as tzmap;
 import 'package:provider/provider.dart';
-import 'package:al_qibla/widgets/navbar.dart';
+import 'package:al_qibla/widgets/home_drawer.dart';
 
 class CitiesScreen extends StatefulWidget {
   const CitiesScreen({super.key});
@@ -64,6 +64,7 @@ class _CitiesScreenState extends State<CitiesScreen> {
           statusBarColor: Colors.transparent,
         ),
         child: Scaffold(
+          drawer: const HomeDrawer(selectedIndex: 4),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
               final cityJson =
@@ -225,6 +226,7 @@ class _CitiesScreenState extends State<CitiesScreen> {
                 ? Colors.white
                 : AppTheme.primaryColor,
             showBackButton: false,
+            showMenuButton: true,
           ),
           body: SafeArea(
             bottom: false,
@@ -302,13 +304,6 @@ class _CitiesScreenState extends State<CitiesScreen> {
                     ),
                   ),
           ),
-          bottomNavigationBar: const SafeArea(
-            top: false,
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: BottomNavigationWidget(selectedIndex: 1),
-            ),
-          ),
         ));
   }
 }
@@ -377,7 +372,9 @@ class CityExpansionTile extends StatelessWidget {
               Icon(
                 Icons.mosque,
                 size: 20,
-                color: isDarkMode ? AppTheme.darkPrimaryColor : AppTheme.primaryColor,
+                color: isDarkMode
+                    ? AppTheme.darkPrimaryColor
+                    : AppTheme.primaryColor,
               ),
               SizedBox(
                 width: 15,
@@ -429,14 +426,16 @@ class CityExpansionTile extends StatelessWidget {
                 ),
                 Text(
                   customDateFormat.format(toCity(prayerTimeList[index])),
-                  style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+                  style: TextStyle(
+                      color: isDarkMode ? Colors.white : Colors.black),
                 ),
                 SizedBox(
                   width: 15,
                 ),
                 Text(
                   Provider.of<AppProvider>(context).prayerNames[index],
-                  style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+                  style: TextStyle(
+                      color: isDarkMode ? Colors.white : Colors.black),
                 ),
               ],
             );

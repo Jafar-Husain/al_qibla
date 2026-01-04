@@ -13,7 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:workmanager/workmanager.dart';
-import 'package:al_qibla/screens/new_homescreen/homescreen.dart';
+import 'package:al_qibla/screens/home_screen.dart';
 
 @pragma(
     'vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
@@ -83,9 +83,8 @@ class MainApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,
-            themeMode: appProvider.getIsDarkMode()
-                ? ThemeMode.dark
-                : ThemeMode.light,
+            themeMode:
+                appProvider.getIsDarkMode() ? ThemeMode.dark : ThemeMode.light,
 
             // This is important - it overrides TextField theme specifically
             // to ensure dialog text fields show black text
@@ -93,9 +92,11 @@ class MainApp extends StatelessWidget {
               final isDark = Theme.of(context).brightness == Brightness.dark;
               return Theme(
                 data: Theme.of(context).copyWith(
-                  dialogBackgroundColor: isDark ? const Color(0xFF2F3E3C) : Colors.white,
+                  dialogBackgroundColor:
+                      isDark ? const Color(0xFF2F3E3C) : Colors.white,
                   dialogTheme: DialogThemeData(
-                    backgroundColor: isDark ? const Color(0xFF2F3E3C) : Colors.white,
+                    backgroundColor:
+                        isDark ? const Color(0xFF2F3E3C) : Colors.white,
                     titleTextStyle: TextStyle(
                         color: isDark ? Colors.white : Colors.black,
                         fontSize: 20,
@@ -104,26 +105,32 @@ class MainApp extends StatelessWidget {
                         color: isDark ? Colors.white70 : Colors.black),
                   ),
                   inputDecorationTheme: InputDecorationTheme(
-                    labelStyle: TextStyle(color: isDark ? Colors.white70 : Colors.black87),
-                    hintStyle: TextStyle(color: isDark ? Colors.white38 : Colors.black54),
+                    labelStyle: TextStyle(
+                        color: isDark ? Colors.white70 : Colors.black87),
+                    hintStyle: TextStyle(
+                        color: isDark ? Colors.white38 : Colors.black54),
                     filled: true,
                     fillColor: isDark ? const Color(0xFF384A48) : Colors.white,
                   ),
                   textSelectionTheme: TextSelectionThemeData(
-                    cursorColor: isDark ? AppTheme.darkPrimaryColor : Colors.blue,
+                    cursorColor:
+                        isDark ? AppTheme.darkPrimaryColor : Colors.blue,
                     selectionColor: isDark
                         ? AppTheme.darkPrimaryColor.withOpacity(0.3)
                         : Colors.blue.withOpacity(0.3),
-                    selectionHandleColor: isDark ? AppTheme.darkPrimaryColor : Colors.blue,
+                    selectionHandleColor:
+                        isDark ? AppTheme.darkPrimaryColor : Colors.blue,
                   ),
                   textButtonTheme: TextButtonThemeData(
                     style: TextButton.styleFrom(
-                      foregroundColor: isDark ? AppTheme.darkPrimaryColor : Colors.blue,
+                      foregroundColor:
+                          isDark ? AppTheme.darkPrimaryColor : Colors.blue,
                     ),
                   ),
                   // Ensure TextField uses appropriate text color
                   textTheme: Theme.of(context).textTheme.copyWith(
-                        titleMedium: TextStyle(color: isDark ? Colors.white : Colors.black),
+                        titleMedium: TextStyle(
+                            color: isDark ? Colors.white : Colors.black),
                       ),
                 ),
                 child: child!,
@@ -131,7 +138,7 @@ class MainApp extends StatelessWidget {
             },
 
             routes: {
-              '/homeScreen  ': (context) => const NewHomeScreen(),
+              '/homeScreen': (context) => const HomeScreen(),
               '/settingScreen': (context) => const SettingScreen(),
               '/qiblaScreen': (context) => const QiblaScreen(),
               '/citiesScreen': (context) => const CitiesScreen(),
@@ -144,7 +151,7 @@ class MainApp extends StatelessWidget {
                   ),
               '/missedPrayerScreen': (context) => const MissedPrayerScreen()
             },
-            home: const NewHomeScreen(),
+            home: const HomeScreen(),
           );
         },
       ),

@@ -6,12 +6,12 @@ import 'package:al_qibla/app_theme.dart';
 import 'package:al_qibla/widgets/setting_widgets/setting_container.dart';
 import 'package:al_qibla/widgets/setting_widgets/section_title.dart';
 import 'package:al_qibla/widgets/setting_widgets/toggle_switch.dart';
+import 'package:al_qibla/widgets/home_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app_settings/app_settings.dart';
-import 'package:al_qibla/widgets/navbar.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -34,14 +34,11 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   void initState() {
-    // TODO: implement initState
-
     super.initState();
   }
 
   @override
   void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     setSelectedMethod();
   }
@@ -54,12 +51,14 @@ class _SettingScreenState extends State<SettingScreen> {
         statusBarColor: Colors.transparent,
       ),
       child: Scaffold(
+        drawer: const HomeDrawer(selectedIndex: 5),
         backgroundColor: AppTheme.getCurrentBackgroundColor(isDarkMode),
         appBar: CustomAppBar(
           title: "Settings",
           backgroundColor: Colors.transparent,
           foregroundColor: isDarkMode ? Colors.white : AppTheme.primaryColor,
           showBackButton: false,
+          showMenuButton: true,
         ),
         body: SafeArea(
           bottom: false,
@@ -87,7 +86,6 @@ class _SettingScreenState extends State<SettingScreen> {
                     ),
                     isDarkMode: isDarkMode,
                     onTap: () {
-                      // Add any action you want when the ListTile is tapped
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -124,8 +122,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                           selectedMehthod = newValue;
                                         });
 
-                                        Navigator.pop(
-                                            context); // Close the dialog
+                                        Navigator.pop(context);
                                         Provider.of<AppProvider>(context,
                                                 listen: false)
                                             .getPrayerTimes(refresh: true);
@@ -185,8 +182,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                         Provider.of<AppProvider>(context,
                                                 listen: false)
                                             .setMadhab(newValue!);
-                                        Navigator.pop(
-                                            context); // Close the dialog
+                                        Navigator.pop(context);
                                         Provider.of<AppProvider>(context,
                                                 listen: false)
                                             .getPrayerTimes(refresh: true);
@@ -247,8 +243,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                         Provider.of<AppProvider>(context,
                                                 listen: false)
                                             .setHighLatitudeRule(newValue!);
-                                        Navigator.pop(
-                                            context); // Close the dialog
+                                        Navigator.pop(context);
                                         Provider.of<AppProvider>(context,
                                                 listen: false)
                                             .getPrayerTimes(refresh: true);
@@ -421,13 +416,6 @@ class _SettingScreenState extends State<SettingScreen> {
                 ],
               ),
             ),
-          ),
-        ),
-        bottomNavigationBar: const SafeArea(
-          top: false,
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: BottomNavigationWidget(selectedIndex: 3),
           ),
         ),
       ),

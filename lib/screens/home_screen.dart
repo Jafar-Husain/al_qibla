@@ -24,7 +24,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     // Initialize prayer times
     Provider.of<AppProvider>(context, listen: false).initStateHomePage();
-    //Provider.of<AppProvider>(context, listen: false).animateScrollController();
   }
 
   @override
@@ -49,11 +48,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light, // White icons/text
-        statusBarBrightness: Brightness.dark, // For iOS
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
       ),
       child: Scaffold(
-        drawer: HomeDrawer(),
+        drawer: const HomeDrawer(selectedIndex: 0),
         body: Container(
           width: double.infinity,
           height: double.infinity,
@@ -69,14 +68,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
           child: Stack(
             children: [
-              // Show basic UI elements
-
-              topInfo(),
+              // Background mosque silhouette
               mosqueImage(),
               appProvider.currentSVG,
-              // Conditionally show the prayer picker
+
+              // Top info with countdown
+              topInfo(),
+
+              // Prayer picker at bottom
               appProvider.prayerTimesList.isNotEmpty
-                  ? prayerPicker()
+                  ? const prayerPicker()
                   : const Center(
                       child: Text(
                         "Loading prayer times...",

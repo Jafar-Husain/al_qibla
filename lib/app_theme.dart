@@ -10,10 +10,10 @@ class AppTheme {
 
   // Dark Theme Colors
   static const Color darkPrimaryColor = Color(0xFFDBB76C); // Golden highlight
-  static const Color darkSecondaryColor = Color(0xFFB4A78A); // Soft sand
-  static const Color darkBackgroundColor = Color(0xFF1B2D2A); // Deep green/blue
-  static const Color darkSmallContainer = Color(0xFF2F3E3C);
-  static const Color darkBigContainer = Color(0xFF384A48);
+  static const Color darkSecondaryColor = Color(0xFF9E9E9E); // Grey
+  static const Color darkBackgroundColor = Color(0xFF1A1A1A); // Dark grey/black
+  static const Color darkSmallContainer = Color(0xFF2D2D2D);
+  static const Color darkBigContainer = Color(0xFF3D3D3D);
 
   // Light Theme
   static final ThemeData light = ThemeData(

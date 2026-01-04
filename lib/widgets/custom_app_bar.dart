@@ -6,6 +6,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Color? backgroundColor;
   final Color? foregroundColor;
   final bool showBackButton;
+  final bool showMenuButton;
   final VoidCallback? onBackPressed;
   final List<Widget>? actions;
 
@@ -15,12 +16,27 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.backgroundColor,
     this.foregroundColor,
     this.showBackButton = true,
+    this.showMenuButton = false,
     this.onBackPressed,
     this.actions,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Widget? leadingWidget;
+
+    if (showMenuButton) {
+      leadingWidget = IconButton(
+        icon: const Icon(Icons.menu_rounded),
+        onPressed: () => Scaffold.of(context).openDrawer(),
+      );
+    } else if (showBackButton) {
+      leadingWidget = IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: onBackPressed ?? () => Navigator.pop(context),
+      );
+    }
+
     return AppBar(
       elevation: 0,
       backgroundColor: backgroundColor ?? Colors.transparent,
@@ -33,15 +49,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           fontSize: 18,
         ),
       ),
-      leading: showBackButton
-          ? IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: onBackPressed ?? () => Navigator.pop(context),
-            )
-          : null,
+      leading: leadingWidget,
       actions: actions,
-      systemOverlayStyle:
-          SystemUiOverlayStyle.dark, // Ensures dark status bar icons
+      systemOverlayStyle: SystemUiOverlayStyle.dark,
     );
   }
 

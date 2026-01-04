@@ -2,12 +2,12 @@ import 'package:adhan_dart/adhan_dart.dart';
 import 'package:al_qibla/provider/app_provider.dart';
 import 'package:al_qibla/widgets/compass_view.dart';
 import 'package:al_qibla/widgets/custom_app_bar.dart';
+import 'package:al_qibla/widgets/home_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:al_qibla/app_theme.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:provider/provider.dart';
-import 'package:al_qibla/widgets/navbar.dart';
 
 class QiblaScreen extends StatefulWidget {
   const QiblaScreen({super.key});
@@ -32,7 +32,6 @@ class _QiblaScreenState extends State<QiblaScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     getQibla();
     print("initstate");
     super.initState();
@@ -43,8 +42,8 @@ class _QiblaScreenState extends State<QiblaScreen> {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light, // White icons/text
-        statusBarBrightness: Brightness.dark, // For iOS
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
       ),
       child: StreamBuilder<CompassEvent>(
         stream: FlutterCompass.events,
@@ -53,9 +52,8 @@ class _QiblaScreenState extends State<QiblaScreen> {
           final heading = snapshot.data?.heading ?? 0;
           final accuracy = snapshot.data?.accuracy;
           String accuracyStatus = '';
-          Color accuracyColor = isDarkMode
-              ? Colors.white
-              : AppTheme.primaryColor; // Default base color
+          Color accuracyColor =
+              isDarkMode ? Colors.white : AppTheme.primaryColor;
 
           if (accuracy != null) {
             if (accuracy <= 5) {
@@ -75,12 +73,14 @@ class _QiblaScreenState extends State<QiblaScreen> {
           }
 
           return Scaffold(
+            drawer: const HomeDrawer(selectedIndex: 1),
             appBar: CustomAppBar(
               title: "Compass",
               backgroundColor: Colors.transparent,
               foregroundColor:
                   isDarkMode ? Colors.white : AppTheme.primaryColor,
               showBackButton: false,
+              showMenuButton: true,
             ),
             backgroundColor: AppTheme.getCurrentBackgroundColor(isDarkMode),
             body: SafeArea(
@@ -122,13 +122,6 @@ class _QiblaScreenState extends State<QiblaScreen> {
                     style: TextStyle(color: accuracyColor),
                   ),
                 ],
-              ),
-            ),
-            bottomNavigationBar: const SafeArea(
-              top: false,
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: BottomNavigationWidget(selectedIndex: 0),
               ),
             ),
           );

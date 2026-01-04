@@ -1,0 +1,5 @@
+- [ ] revert to old home screen but how to implement missed prayers and calendar with navbar ?
+- [ ] fix local notifications not working in release mode android
+- [ ] add android home screen widget
+- [ ] fix that showing prayer time in 00:00 when for example fajr time is 05:00 and it's currently 4:59
+- [ ] manually set location to one in the cities screen search
