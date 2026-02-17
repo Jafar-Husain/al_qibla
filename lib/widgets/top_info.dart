@@ -14,32 +14,16 @@ class topInfo extends StatefulWidget {
 
 class _topInfoState extends State<topInfo> {
   Timer? _timer;
-  String _dateString = '';
 
   @override
   void initState() {
     super.initState();
-    _updateDate();
-    // Update every minute to keep date current
-    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
-      if (mounted) {
-        _updateDate();
-        setState(() {});
-      }
-    });
   }
 
   @override
   void dispose() {
     _timer?.cancel();
     super.dispose();
-  }
-
-  void _updateDate() {
-    final now = DateTime.now();
-    setState(() {
-      _dateString = DateFormat('EEE dd MMM').format(now);
-    });
   }
 
   String _displayPrayerName(AppProvider appProvider) {
@@ -138,7 +122,7 @@ class _topInfoState extends State<topInfo> {
                 const SizedBox(height: 5),
                 // Date and city
                 Text(
-                  '$_dateString • ${appProvider.getCityName()}',
+                  '${DateFormat('EEE dd MMM').format(appProvider.getDisplayDate())} • ${appProvider.getCityName()}',
                   style: const TextStyle(
                     fontSize: 16,
                     color: Colors.white70,

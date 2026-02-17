@@ -109,12 +109,16 @@ class AppProvider extends ChangeNotifier {
     "twilightangle": "Angle Based",
   };
 
-  //changing var:
+  // changing var:
   late double _latitude;
   late double _longitude;
   late CalculationParameters _method;
   late String _madhab;
   late String _highLatitudeRule;
+
+  // The date that the current prayerTimesList and UI should reflect
+  DateTime _displayDate = DateTime.now();
+
   String _cityName = "";
   var currentFirstGrad = const Color(0xff100e2a);
   var currentSecondGrad = const Color(0xff2e2855);
@@ -143,6 +147,46 @@ class AppProvider extends ChangeNotifier {
   bool _asrNotification = true;
   bool _maghribNotification = true;
   bool _ishaNotification = true;
+
+  // Helper function to handle common tasks
+  Future<void> handlePrayerTimes(PrayerTimes prayerTimes) async {
+    await setNextPrayerNameFromPrayerTimes(prayerTimes);
+
+    // Determine if we should show tomorrow's schedule
+    // This happens if the next prayer is Fajr (or Fajhrafter) and it falls on a different day than today
+    // effectively meaning we are past Isha and looking at tomorrow's Fajr.
+    bool showTomorrow = false;
+    if (nextPrayerName?.toLowerCase() == 'fajr' ||
+        nextPrayerName?.toLowerCase() == 'fajrafter') {
+      final now = DateTime.now();
+      if (nextPrayerTime.day != now.day) {
+        showTomorrow = true;
+      }
+    }
+
+    if (showTomorrow) {
+      // Switch display to Tomorrow
+      _displayDate = DateTime.now().add(const Duration(days: 1));
+
+      // Recalculate prayer list for tomorrow
+      PrayerTimes tomorrowTimes = await calculatePrayerTimes(_latitude,
+          _longitude, _method, _madhab, _highLatitudeRule, _displayDate);
+      prayerTimesList = await calculateCityPrayerTimeFromPrayerTimes(
+          tomorrowTimes, _latitude, _longitude);
+    } else {
+      // Standard Today display
+      _displayDate = DateTime.now();
+      prayerTimesList = await calculateCityPrayerTimeFromPrayerTimes(
+          prayerTimes, _latitude, _longitude);
+    }
+
+    await getMyCitiesList();
+    await getFajrMissed();
+    await getDhuhrMissed();
+    await getAsrMissed();
+    await getMaghribMissed();
+    await getIshaMissed();
+  }
 
   Future<void> getFajrMissed() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -254,6 +298,10 @@ class AppProvider extends ChangeNotifier {
 
   int ishaMissed() {
     return _ishaMissed;
+  }
+
+  DateTime getDisplayDate() {
+    return _displayDate;
   }
 
   double getLongitude() {
@@ -917,18 +965,6 @@ class AppProvider extends ChangeNotifier {
   Future<void> getPrayerTimes({bool init = false, bool refresh = true}) async {
     await getAllSharedPref();
     var prayerTimes;
-
-    // Helper function to handle common tasks
-    Future<void> handlePrayerTimes(PrayerTimes prayerTimes) async {
-      prayerTimesList = await calculatePrayerTimeFromPrayerTimes(prayerTimes);
-      await setNextPrayerNameFromPrayerTimes(prayerTimes);
-      await getMyCitiesList();
-      await getFajrMissed();
-      await getDhuhrMissed();
-      await getAsrMissed();
-      await getMaghribMissed();
-      await getIshaMissed();
-    }
 
     if (init) {
       // Initial setup
